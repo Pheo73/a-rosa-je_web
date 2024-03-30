@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import Home from './component/Home';
 import AddPlant from './component/AddPlant';
 import Profil from './component/Profil';
@@ -31,6 +31,7 @@ function AppRoutes({ isLoggedIn }) {
 
   return (
     <Routes>
+      <Route path="/" element={<Home />} />
       <Route path="/home" element={<Home />} />
       <Route path="/profil" element={<Profil />} />
       <Route path="/addplant" element={<AddPlant />} />
