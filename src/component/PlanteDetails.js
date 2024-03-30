@@ -12,7 +12,7 @@ function PlanteDetails() {
       <header className="flex py-4">
         <div className="mt-2">
           <button className="text-black text-[20px] font-[rubik-mono]  ml-16">
-            <Link to="/">Home</Link>
+            <Link to="/home">Home</Link>
           </button>
         </div>
         <div className="ml-auto mr-16">

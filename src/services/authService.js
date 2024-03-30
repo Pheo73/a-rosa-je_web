@@ -12,7 +12,7 @@ const authService = {
 
       if (response.ok) {
         const data = await response.json();
-        return data.token;
+        return data.access; 
       } else {
         throw new Error('Invalid credentials');
       }

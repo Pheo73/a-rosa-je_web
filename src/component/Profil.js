@@ -1,14 +1,22 @@
 import "../style/App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBell } from "@fortawesome/free-regular-svg-icons";
-import { Link } from "react-router-dom";
+import { Link,useNavigate  } from "react-router-dom";
+import useStore from "../store/Store";
 function Profil() {
+  const store = useStore();
+  const navigate = useNavigate(); 
+
+  const handleLogout = () => {
+    store.logout();
+    navigate('/login'); 
+  };
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
       <header className="flex py-4">
         <div className="mt-2">
           <button className="text-black text-[20px] font-[rubik-mono]  ml-16">
-            <Link to="/">Home</Link>
+            <Link to="/home">Home</Link>
           </button>
         </div>
         <div className="ml-auto mr-16">
@@ -87,7 +95,7 @@ function Profil() {
           <button className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block">
             SAUVEGARDER
           </button>
-          <button className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block">
+          <button onClick={handleLogout} className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block">
             DÉCONNECTION
           </button>
         </div>

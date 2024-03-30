@@ -1,19 +1,20 @@
-import { create } from 'zustand'; // Importez la fonction create depuis zustand
-import authService from '../services/authService'; // Assurez-vous que le chemin est correct
+import { create } from 'zustand';
+import authService from '../services/authService';
 
-// Créez le store Zustand
+const TOKEN_KEY = 'auth_token';
+
 const useStore = create((set) => ({
-  token: null,
-  isLoggedIn: false,
-  // Déclarez la fonction login de manière cohérente
+  token: localStorage.getItem(TOKEN_KEY) || null,
+  isLoggedIn: !!localStorage.getItem(TOKEN_KEY),
+
   login: async (username, password) => {
     try {
-      // Appel de la fonction login de authService
       const token = await authService.login(username, password);
-      // Mettez à jour le store avec le token et isLoggedIn
+      localStorage.setItem(TOKEN_KEY, token);
       set({ token, isLoggedIn: true });
     } catch (error) {
       console.error('Error logging in:', error);
+      throw error;
     }
   },
   register: async (formData) => {
@@ -23,6 +24,28 @@ const useStore = create((set) => ({
       throw new Error('Registration failed');
     }
   },
+  logout: () => {
+    localStorage.removeItem(TOKEN_KEY);
+    set({ token: null, isLoggedIn: false });
+  },
+
+  isTokenExpired: () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return true;
+
+    const tokenData = JSON.parse(atob(token.split('.')[1]));
+    return Date.now() >= tokenData.exp * 1000;
+  },
+
+  renewToken: async () => {
+    if (useStore.getState().isTokenExpired()) {
+      const newToken = await authService.renewToken();
+      localStorage.setItem(TOKEN_KEY, newToken);
+      set({ token: newToken, isLoggedIn: true });
+    }
+  },
 }));
 
-export default useStore; // Exportez le store Zustand
+export default useStore;
+
+
