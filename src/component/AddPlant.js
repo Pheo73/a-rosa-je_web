@@ -94,7 +94,7 @@ function AddPlant() {
         </div>
         <div className="flex mb-4">
           <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-            Quantité d'eau
+            Quantité d'eau*
           </p>
           <select
             className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-3 ml-4"
@@ -105,10 +105,7 @@ function AddPlant() {
             <option value="1">Beaucoup</option>
           </select>
         </div>
-        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3 ">
-          Dates de garde
-        </p>
-        <input type="date" className="mb-4"></input>
+        <p className="italic ">Si vous souhaitez renseigner des dates de gardes vous pourrez le faire après avoir enregistré votre plante.</p>
         <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
           Informations supplémentaires
         </p>

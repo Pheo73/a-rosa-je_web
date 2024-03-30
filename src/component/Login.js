@@ -23,7 +23,7 @@ const Login = () => {
   };
 
   return (
-    <div className="w-screen h-screen bg-[#1A2016] pt-0 flex flex-col justify-center items-center">
+    <div className="w-screen h-screen bg-[#1A2016] bg-[url('login.png')] bg-left bg-no-repeat pt-0 flex flex-col justify-center items-center">
       <h1 className='font-[rubik-mono] text-white text-[40px] mb-8'>A'rrosa-je</h1>
       <div className='w-[644px] h-[370px] bg-white bg-opacity-50 rounded-lg p-10 mx-auto  flex flex-col items-center justify-center'>
         <form onSubmit={handleLogin} className='flex flex-col items-center justify-center'>

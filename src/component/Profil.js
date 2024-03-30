@@ -52,45 +52,36 @@ function Profil() {
         <h1 className=" text-black text-[15px] font-[rubik-mono]">
           Vos informations
         </h1>
+        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Username*</p>
+        <input
+          className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+          placeholder="Username"
+          type="email"
+        ></input>
+        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Prénom*</p>
+        <input
+          className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+          placeholder="John"
+          type="email"
+        ></input>
+        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Nom*</p>
+        <input
+          className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+          placeholder="Smoth"
+          type="email"
+        ></input>
         <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Email*</p>
         <input
           className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
           placeholder="email@adress.com"
           type="email"
         ></input>
-        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Téléphone*</p>
+        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Téléphone</p>
         <input
           className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
           placeholder="+33 X XX XX XX XX"
           type="tel"
         ></input>
-        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Adresse*</p>
-        <input
-          className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-          placeholder="94 rue voltaire"
-          type="address"
-        ></input>
-        <div className="flex mx-auto justify-center">
-          <div className="mr-16">
-            <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-              Département
-            </p>
-            <select
-              className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-              type="text"
-            >
-                <option value="Rhône-Alpes">Rhône-Alpes</option>
-            </select>
-          </div>
-          <div>
-            <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Vile</p>
-            <input
-              className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-              placeholder="Lyon"
-              type="text"
-            ></input>
-          </div>
-        </div>
         <div className="flex mx-auto justify-center">
           <button className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block">
             SAUVEGARDER

@@ -80,7 +80,7 @@ const Register = () => {
   };
 
   return (
-    <div className="w-screen h-full bg-[#1A2016] pt-10 pb-10 flex flex-col justify-center items-center">
+    <div className="w-full h-full bg-[#1A2016] bg-[url('login.png')] bg-left bg-no-repeat pt-10 pb-10 flex flex-col justify-center items-center">
       <h1 className="font-[rubik-mono] text-white text-[40px] mb-8">
         A'rrosa-je
       </h1>
@@ -99,7 +99,7 @@ const Register = () => {
             onChange={handleChange}
             name="username"
             placeholder="Username*"
-            className={`w-[400px] h-[52px] rounded-full p-2 mt-6 mt-10 ${
+            className={`w-[400px] h-[52px] rounded-full p-2 mt-6 ${
               errors.username ? "border border-red-500" : ""
             }`}
           />
@@ -178,7 +178,7 @@ const Register = () => {
           )}
           <button
             type="submit"
-            className="w-[250px] h-[41px] bg-[#01B763] rounded-full text-white font-[poppins-regular] mb-5"
+            className="w-[250px] h-[41px] bg-[#01B763] rounded-full text-white font-[poppins-regular] mb-5 mt-6"
           >
             S'inscrire
           </button>

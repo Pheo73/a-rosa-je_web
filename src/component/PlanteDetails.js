@@ -7,6 +7,9 @@ import {
   faDroplet,
 } from "@fortawesome/free-solid-svg-icons";
 function PlanteDetails() {
+  const handleSubmit= ()=>{
+
+  }
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
       <header className="flex py-4">
@@ -78,6 +81,52 @@ function PlanteDetails() {
             ></img>
           </div>
         </div>
+      </div>
+      <div className="bg-[#FFFFFF] h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 mb-8">
+        <p className="text-black text-[15px] font-[rubik-mono]">Créer une demande de garde</p>
+        <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px] mb-6">
+          Modifiez et crée autant de demande que vous voulez !
+        </p>
+        <form onSubmit={handleSubmit} className='flex flex-col'>
+          <p className="mb-3 font-[poppins-medium] text-[#3E9B2A]">Dates de garde</p>
+          <div className="flex mb-6">
+          <p className="font-[poppins-regular] text-black mr-3">Début :</p>
+          <input type="date" className="border border-black p-1 rounded-md mr-16"></input>
+          <p className="font-[poppins-regular] text-black mr-3">Fin :</p>
+          <input type="date" className="border border-black p-1 rounded-md"></input>
+          </div>
+          <p className="mb-3 font-[poppins-medium] text-[#3E9B2A]">Adresse de la plante</p>
+          <div className="flex ">
+          <div className="mr-16">
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Adresse*</p>
+        <input
+          className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+          placeholder="94 rue voltaire"
+          type="address"
+        ></input>
+            <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
+              Département
+            </p>
+            <select
+              className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+              type="text"
+            >
+                <option value="Rhône-Alpes">Rhône-Alpes</option>
+            </select>
+          </div>
+          <div>
+            <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Vile</p>
+            <input
+              className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+              placeholder="Lyon"
+              type="text"
+            ></input>
+          </div>
+        </div>
+          <button type="submit" className='w-[250px] h-[41px] bg-[#01B763] rounded-full text-white font-[poppins-regular] mb-5 mx-auto mt-6'>Se connecter</button>
+        </form>
+
+        
       </div>
       <div className="bg-[#FFFFFF] h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 mb-8">
         <p className="text-black text-[14px] font-[rubik-mono]">Commentaire</p>
