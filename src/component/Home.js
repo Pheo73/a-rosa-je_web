@@ -13,8 +13,12 @@ function Home() {
   const { token } = useStore();
   const [userPlant, setUserPlant] = useState(null);
 
-  const displayPlant = async (token) => {
+  const displayPlant = async () => {
     try {
+      if (!token) {
+        return; // Sortir de la fonction si le token est vide
+      }
+
       const response = await fetch("http://127.0.0.1:8000/api/plants/", {
         method: "GET",
         headers: {
@@ -35,7 +39,7 @@ function Home() {
   };
   useEffect(() => {
     displayPlant(token);
-  }, []);
+  }, [token]);
   return (
     <div className="bg-[#1A2016] min-h-screen py-10">
       <header className="flex">
