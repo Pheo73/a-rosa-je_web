@@ -16,7 +16,7 @@ function Home() {
   const displayPlant = async () => {
     try {
       if (!token) {
-        return; // Sortir de la fonction si le token est vide
+        return;
       }
 
       const response = await fetch("http://127.0.0.1:8000/api/plants/", {
