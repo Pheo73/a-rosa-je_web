@@ -41,6 +41,26 @@ const authService = {
       throw error;
     }
   },
+  async addPlant(formData) {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/plants/', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        console.log('Plant added successfully');
+      } else {
+        throw new Error('Plant addition failed');
+      }
+    } catch (error) {
+      console.error('Error adding plant:', error);
+      throw error;
+    }
+  }
 };
 
 export default authService;

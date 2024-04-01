@@ -1,13 +1,60 @@
 import "../style/App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBell } from "@fortawesome/free-regular-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import useStore from "../store/Store";
+
 function AddPlant() {
+  const [formData, setFormData] = useState({
+    species: "",
+    plantDescription: "",
+    name: "",
+    plantAdress: "",
+  });
+  const navigate = useNavigate();
+  const { token } = useStore();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await addPlant(formData, token); 
+      navigate("/home");
+    } catch (error) {
+      console.error("Error adding plant:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const addPlant = async (formData, token) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/plants/create/', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Plant addition failed');
+      }
+    } catch (error) {
+      console.error('Error adding plant:', error);
+      throw error;
+    }
+  };
+
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
       <header className="flex py-4">
         <div className="mt-2">
-          <button className="text-black text-[20px] font-[rubik-mono]  ml-16">
+          <button className="text-black text-[20px] font-[rubik-mono] ml-16">
             <Link to="/home">Home</Link>
           </button>
         </div>
@@ -17,105 +64,81 @@ function AddPlant() {
               icon={faBell}
               color="white"
               size="1x"
-              className="bg-[#464C44] p-2  rounded-full mr-3"
+              className="bg-[#464C44] p-2 rounded-full mr-3"
             />
-            <Link to="/profil"><FontAwesomeIcon
-              icon={faUser}
-              size="1x"
-              color="white"
-              className="border border-white rounded-full p-3 mt-2"
-            /></Link>
+            <Link to="/profil">
+              <FontAwesomeIcon
+                icon={faUser}
+                size="1x"
+                color="white"
+                className="border border-white rounded-full p-3 mt-2"
+              />
+            </Link>
           </div>
         </div>
       </header>
       <div className="bg-[#000000] h-56 pt-3">
-        <h1 className="relative text-white text-[40px] font-[rubik-mono]  ml-16">
+        <h1 className="relative text-white text-[40px] font-[rubik-mono] ml-16">
           <span>
             Bienvenue sur<br></br> a’rosa-je
           </span>
           <span className="text-[#01B763]">.</span>
         </h1>
         <p className="text-white font-[poppins-regular] ml-16">
-          Commencons par ajouter votre première plante !
+          Commençons par ajouter votre première plante !
         </p>
       </div>
 
       <div className="bg-[#FFFFFF] h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 mb-8">
-        <h1 className=" text-black text-[15px] font-[rubik-mono]">
-          <span>
-            RENSEIGNEZ LES INFORMATIONS<br></br>DE VOTRE PLANTE
-          </span>
+        <h1 className="text-black text-[15px] font-[rubik-mono]">
+          <span>RENSEIGNEZ LES INFORMATIONS<br></br>DE VOTRE PLANTE</span>
           <span className="text-[#01B763]">.</span>
         </h1>
-        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-          Nom de votre plante*
-        </p>
-        <input
-          className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-4"
-          placeholder="Cactus"
-        ></input>
-        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-          Ajouter une photo*
-        </p>
-        <div className="flex mt-3 mb-4">
-          <input type="file" placeholder="AJOUTER UN FICHIER"></input>
-          <p className="font-[poppins-regular] text-[12px] text-[#9E9E9E] h-fit self-end">
-            Prennez vos photos en mode portrait*
-          </p>
-        </div>
-        <div className="flex mb-4">
+        <form onSubmit={handleSubmit} className="flex flex-col">
           <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-            Ensoleillement*
+            Espèce de la plante*
           </p>
-          <select
-            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-3 ml-4"
+          <input
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-4"
             placeholder="Cactus"
-          >
-            <option value="1">Peu</option>
-            <option value="1">Modéré</option>
-            <option value="1">Beaucoup</option>
-          </select>
-        </div>
-        <div className="flex mb-4">
+            name="species"
+            value={formData.species}
+            onChange={handleChange}
+          />
           <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-            Température*
+            Description de la plante*
           </p>
-          <select
-            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-3 ml-4"
-            placeholder="Cactus"
-          >
-            <option value="1">Inférieur à 12°C</option>
-            <option value="1">12-15°C</option>
-            <option value="1">16-19°C</option>
-            <option value="1">19-22°C</option>
-            <option value="1">23-26°C</option>
-            <option value="1">Superieur à 26°C</option>
-          </select>
-        </div>
-        <div className="flex mb-4">
+          <textarea
+            className="border border-black rounded-2xl p-3 py-2 mt-3 w-80"
+            placeholder="Description..."
+            name="plantDescription"
+            value={formData.plantDescription}
+            onChange={handleChange}
+          ></textarea>
           <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-            Quantité d'eau*
+            Nom de la plante*
           </p>
-          <select
-            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-3 ml-4"
-            placeholder="Cactus"
-          >
-            <option value="1">Peu</option>
-            <option value="1">Modéré</option>
-            <option value="1">Beaucoup</option>
-          </select>
-        </div>
-        <p className="italic ">Si vous souhaitez renseigner des dates de gardes vous pourrez le faire après avoir enregistré votre plante.</p>
-        <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-          Informations supplémentaires
-        </p>
-        <textarea
-          className="border border-black rounded-2xl p-3 py-2 mt-3 w-80"
-          placeholder="Description..."
-        ></textarea>
-        <button className="text-white text-[15px] font-[rubik-mono] w-64 h-14 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block">
-          AJOUTER VOTRE PLANTE
-        </button>
+          <input
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-4"
+            placeholder="Nom de la plante"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
+            Adresse de la plante*
+          </p>
+          <input
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-4"
+            placeholder="Adresse de la plante"
+            name="plantAddress"
+            value={formData.plantAddress}
+            onChange={handleChange}
+          />
+          <button className="text-white text-[15px] font-[rubik-mono] w-64 h-14 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block">
+            AJOUTER VOTRE PLANTE
+          </button>
+        </form>
       </div>
       <footer className="w-100% bg-black h-11"></footer>
     </div>

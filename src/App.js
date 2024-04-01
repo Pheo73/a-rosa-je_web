@@ -35,7 +35,7 @@ function AppRoutes({ isLoggedIn }) {
       <Route path="/home" element={<Home />} />
       <Route path="/profil" element={<Profil />} />
       <Route path="/addplant" element={<AddPlant />} />
-      <Route path="/plantedetails" element={<PlanteDetails />} />
+      <Route path="/plantedetails/:plantId" element={<PlanteDetails />} />
       <Route path="/plantoffers" element={<PlantOffers />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

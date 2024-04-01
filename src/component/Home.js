@@ -6,7 +6,36 @@ import {
   faDroplet,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import useStore from "../store/Store";
+
 function Home() {
+  const { token } = useStore();
+  const [userPlant, setUserPlant] = useState(null);
+
+  const displayPlant = async (token) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/plants/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Plant addition failed");
+      }
+      const userPlant = await response.json();
+      setUserPlant(userPlant);
+    } catch (error) {
+      console.error("Error adding plant:", error);
+      throw error;
+    }
+  };
+  useEffect(() => {
+    displayPlant(token);
+  }, []);
   return (
     <div className="bg-[#1A2016] min-h-screen py-10">
       <header className="flex">
@@ -63,51 +92,63 @@ function Home() {
           <p className="text-white text-[15px] font-[rubik-mono]">
             Vos plantes
           </p>
-          <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px] ml-8">
-            2 plantes
-          </p>
+          {userPlant && (
+            <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px] ml-8">
+              {userPlant.length} Plantes
+            </p>
+          )}
         </div>
 
-        <div className="mt-5 ml-16">
-          <Link to="/plantedetails" className="block w-fit">
-            <div className="w-[330px] h-[297px] bg-white rounded-[10px] pt-[35px] pl-7">
-              <p className="text-black text-[14px] font-[rubik-mono]">Cactus</p>
-              <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px]">
-                Découvrez les avis de professionels
-              </p>
-              <div className="flex">
-                <div>
-                  <div className="flex mt-7">
-                    <FontAwesomeIcon icon={faSun} size="2xl" />
-                    <p className="ml-6 font-[poppins-regular] text-[#3E9B2A]">
-                      Maximum
-                    </p>
-                  </div>
-                  <div className="flex mt-7">
-                    <FontAwesomeIcon icon={faTemperatureHalf} size="2xl" />
-                    <p className="ml-9 font-[poppins-regular] text-[#3E9B2A]">
-                      19-22°C
-                    </p>
-                  </div>
-                  <div className="flex mt-7">
-                    <FontAwesomeIcon icon={faDroplet} size="2xl" />
-                    <p className="ml-8 font-[poppins-regular] text-[#3E9B2A]">
-                      Peu
-                    </p>
-                  </div>
-                </div>
+        {userPlant && (
+          <div className="mt-5 ml-16 flex gap-4 overflow-x-auto max-w-[1000px] p-4">
+            {userPlant.map((plant, index) => (
+              <Link
+                to={`/plantedetails/${plant.plantId}`}
+                className="block w-fit"
+                key={index}
+              >
+                <div className="w-[330px] h-[297px] bg-white rounded-[10px] pt-[35px] pl-7">
+                  <p className="text-black text-[14px] font-[rubik-mono]">
+                    {plant.name}
+                  </p>
+                  <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px]">
+                    Découvrez les avis de professionnels
+                  </p>
+                  <div className="flex">
+                    <div>
+                      <div className="flex mt-7">
+                        <FontAwesomeIcon icon={faSun} size="2xl" />
+                        <p className="ml-6 font-[poppins-regular] text-[#3E9B2A]">
+                          {plant.keepres ?? "Maximum"}
+                        </p>
+                      </div>
+                      <div className="flex mt-7">
+                        <FontAwesomeIcon icon={faTemperatureHalf} size="2xl" />
+                        <p className="ml-9 font-[poppins-regular] text-[#3E9B2A]">
+                          {plant.temperature ?? "19-22°C"}
+                        </p>
+                      </div>
+                      <div className="flex mt-7">
+                        <FontAwesomeIcon icon={faDroplet} size="2xl" />
+                        <p className="ml-8 font-[poppins-regular] text-[#3E9B2A]">
+                          {plant.water ?? "Peu"}
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="h-fit">
-                  <img
-                    src="./cactus.png"
-                    className="max-h-52 ml-12"
-                    alt="cactus"
-                  ></img>
+                    <div className="h-fit">
+                      <img
+                        src="./cactus.png"
+                        className="max-h-52 ml-12"
+                        alt={plant.species}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </Link>
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
       <img
         src="./accueil_plante.png"
