@@ -10,7 +10,6 @@ function AddPlant() {
     species: "",
     plantDescription: "",
     name: "",
-    plantAddress: "",
     sun_exposure: "",
     temperature_range: "",
     watering_amount: "",
@@ -154,17 +153,6 @@ function AddPlant() {
             placeholder="Nom de la plante"
             name="name"
             value={formData.name}
-            onChange={handleChange}
-          />
-          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-            Adresse de la plante*
-          </p>
-          <input
-            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-4"
-            placeholder="Adresse de la plante
-            "
-            name="plantAddress"
-            value={formData.plantAddress}
             onChange={handleChange}
           />
           <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">

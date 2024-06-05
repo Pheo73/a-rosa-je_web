@@ -14,7 +14,38 @@ function PlanteDetails() {
   const { plantId } = useParams();
   const { token, sun, temp, water } = useStore();
   const [userPlant, setUserPlant] = useState(null);
+  const [cities,setCities] = useState(null);
   const plante = userPlant && userPlant.find(plant => parseInt(plant.plantId) === parseInt(plantId));
+
+  const getCities = async(token)=>{
+    try {
+      const response = await fetch("http://172.16.1.43:8000/api/cities/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Get cities failed");
+      }
+      const responseJson = await response.json();
+      setCities(responseJson);
+    } catch (error) {
+      console.error("Get cities failed:", error);
+      throw error;
+    }
+  }
+  const [formData, setFormData] = useState({
+    plant: plantId ,
+    start_date: "",
+    end_date: "",
+    address: "",
+    postal_code: "",
+    price: "",
+    city:0,
+  });
 
   const displayPlant = async (token) => {
     try {
@@ -39,18 +70,46 @@ function PlanteDetails() {
 
 
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    try{
+      await addGuard(formData,token);
+    } catch (error) {
+      console.error("Error adding plant:", error);
+    }
   };
+  const addGuard = async (formData, token) => {
+    try {
+      const response = await fetch("http://172.16.1.43:8000/api/guardian-requests/", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
+      if (!response.ok) {
+        throw new Error("Plant addition failed");
+      }
+    } catch (error) {
+      console.error("Error adding plant:", error);
+      throw error;
+    }
+  };
 
   const getNameFromID = (id, list) => {
     const item = list.find((item) => item.id === id);
     return item ? item.name : "Valeur inconnue";
   };
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   useEffect(() => {
     displayPlant(token);
+    getCities(token);
   }, [token]);
 
   return (
@@ -146,11 +205,15 @@ function PlanteDetails() {
             <input
               type="date"
               className="border border-black p-1 rounded-md mr-16"
+              value={formData.start_date}
+              onChange={handleChange}
             ></input>
             <p className="font-[poppins-regular] text-black mr-3">Fin :</p>
             <input
               type="date"
               className="border border-black p-1 rounded-md"
+              value={formData.start_date}
+              onChange={handleChange}
             ></input>
           </div>
           <p className="mb-3 font-[poppins-medium] text-[#3E9B2A]">
@@ -165,23 +228,33 @@ function PlanteDetails() {
                 className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
                 placeholder="94 rue voltaire"
                 type="address"
+                value={formData.address}
+              onChange={handleChange}
               ></input>
               <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-                Département
+                Ville
               </p>
               <select
                 className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
                 type="text"
+                value={formData.city}
+              onChange={handleChange}
               >
-                <option value="Rhône-Alpes">Rhône-Alpes</option>
+                {cities?.map((city) => (
+                  <option key={city.cityId} value={city.cityName}>
+                    {city.cityName}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Vile</p>
+              <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Code Postal</p>
               <input
                 className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-                placeholder="Lyon"
+                placeholder="69100"
                 type="text"
+                value={formData.postal_code}
+                onChange={handleChange}
               ></input>
             </div>
           </div>

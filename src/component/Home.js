@@ -9,10 +9,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import useStore from "../store/Store";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 function Home() {
-  const { token, sun, temp, water,getSelectValue } = useStore(); // Importez les constantes sun, temp, et water depuis votre store
+  const { token, sun, temp, water, getSelectValue } = useStore(); // Importez les constantes sun, temp, et water depuis votre store
   const [userPlant, setUserPlant] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPlant, setSelectedPlant] = useState(null);
 
   const displayPlant = async () => {
     try {
@@ -58,6 +61,39 @@ function Home() {
 
     fetchSelectValues();
   }, [getSelectValue]);
+
+  const handleDeleteClick = (plant) => {
+    setSelectedPlant(plant);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPlant(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedPlant) return;
+
+    try {
+      const response = await fetch(`http://172.16.1.43:8000/api/plants/${selectedPlant.plantId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete plant");
+      }
+
+      setUserPlant(userPlant.filter((plant) => plant.plantId !== selectedPlant.plantId));
+      closeModal();
+    } catch (error) {
+      console.error("Error deleting plant:", error);
+    }
+  };
 
   return (
     <div className="bg-[#1A2016] min-h-screen py-10">
@@ -127,16 +163,13 @@ function Home() {
         </div>
 
         {userPlant && (
-          <div className="mt-5 ml-16 flex gap-4 overflow-x-auto max-w-[1000px] p-4">
+          <div className="mt-5 ml-16 flex gap-4 overflow-x-auto max-w-[1000px] p-4 scrollbar-custom">
             {userPlant.map((plant, index) => (
-              <Link
-                to={`/plantedetails/${plant.plantId}`}
-                className="block w-fit"
-                key={index}
-              >
-                <div className="w-[330px] h-[297px] bg-white rounded-[10px] pt-[35px] pl-7">
-                  <p className="text-black text-[14px] font-[rubik-mono]">
+              <div className="block w-fit" key={index}>
+                <div className="w-[330px] h-[297px] bg-white rounded-[10px] pt-[35px] pl-7 parent-div">
+                  <p className="text-black text-[14px] font-[rubik-mono] w-full flex">
                     {plant.name}
+                    <FontAwesomeIcon icon={faTrashCan} className="trash-icon ml-52 mt-[-20px] hover:text-red-500" onClick={(e) => { e.preventDefault(); handleDeleteClick(plant); }} />
                   </p>
                   <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px]">
                     Découvrez les avis de professionnels
@@ -171,11 +204,23 @@ function Home() {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
       </section>
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg">
+            <h2 className="text-xl font-semibold mb-4">Confirmer la suppression</h2>
+            <p>Êtes-vous sûr de vouloir supprimer cette plante ?</p>
+            <div className="flex justify-end mt-4">
+              <button className="bg-red-500 text-white px-4 py-2 rounded mr-2" onClick={confirmDelete}>Supprimer</button>
+              <button className="bg-gray-300 px-4 py-2 rounded" onClick={closeModal}>Annuler</button>
+            </div>
+          </div>
+        </div>
+      )}
       <img
         src="./accueil_plante.png"
         className={`${

@@ -2,8 +2,37 @@ import "../style/App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBell } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "react-router-dom";
+import useStore from "../store/Store";
+import React, { useEffect, useState } from "react";
 
 function PlantOffers() {
+  const { token } = useStore();
+const [offers,setOffers]=useState();
+  const getOffers = async(token)=>{
+    try {
+      const response = await fetch("http://172.16.1.43:8000/api/guardian-requests/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Get offers failed");
+      }
+      const responseJson = await response.json();
+      setOffers(responseJson);
+    } catch (error) {
+      console.error("Get offers failed:", error);
+      throw error;
+    }
+  }
+
+  useEffect(()=>{
+    getOffers(token);
+  },[token])
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="bg-[#D9D9D9] flex-grow">
@@ -50,9 +79,10 @@ function PlantOffers() {
           <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px] mt-5">
             Filtres
           </p>
+          {offers?.map((offer, index) => (
           <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2">
             <p className="text-black text-[15px] font-[rubik-mono]">
-              Victoria Dumont
+              {offer.first_name} {offer.last_name}
             </p>
             <div className="flex">
               <div>
@@ -61,19 +91,20 @@ function PlantOffers() {
               <div className="ml-6 mt-4">
                 <div className="flex mb-2">
                   <p className="text-black text-[13px] font-[rubik-mono] mr-6">Dates</p>
-                  <p>19/05/2024</p>
+                  <p>{offer.start_date} / {offer.end_date}</p>
                 </div>
                 <div className="flex mb-2">
                   <p className="text-black text-[13px] font-[rubik-mono] mr-6">Villes</p>
-                  <p>Lyon</p>
+                  <p>{offer.city}</p>
                 </div>
                 <div className="flex">
                   <p className="text-black text-[13px] font-[rubik-mono] mr-6">Prix</p>
-                  <p>50€</p>
+                  <p>{offer.price}</p>
                 </div>
               </div>
             </div>
           </div>
+          ))}
         </div>
       </div>
       <footer className="w-full bg-black h-11 mt-auto flex items-center justify-center text-white">

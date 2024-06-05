@@ -36,3 +36,29 @@
     transform: rotate(360deg);
   }
 }
+
+.scrollbar-custom::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.trash-icon {
+  display: none;
+}
+
+.parent-div:hover .trash-icon {
+  display: inline; /* ou 'block' si vous voulez que l'icône soit en ligne */
+}
