@@ -12,12 +12,13 @@ import useStore from "../store/Store";
 
 function PlanteDetails() {
   const { plantId } = useParams();
-  const { token } = useStore();
+  const { token, sun, temp, water } = useStore();
   const [userPlant, setUserPlant] = useState(null);
+  const plante = userPlant && userPlant.find(plant => parseInt(plant.plantId) === parseInt(plantId));
 
   const displayPlant = async (token) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/plants/", {
+      const response = await fetch("http://172.16.1.43:8000/api/plants/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -28,25 +29,30 @@ function PlanteDetails() {
       if (!response.ok) {
         throw new Error("Plant addition failed");
       }
-      const userPlant = await response.json();
-      setUserPlant(userPlant);
+      const responseJson = await response.json();
+      setUserPlant(responseJson);
     } catch (error) {
       console.error("Error adding plant:", error);
       throw error;
     }
   };
 
-  useEffect(() => {
-    displayPlant(token);
-  }, []);
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
   };
-  const [plante,setPlante]=useState(null);
-  useEffect(()=>{if (userPlant) {
-    setPlante(userPlant.find((plante) => (plante.plantId = plantId)));
-    
-  }},[userPlant])
+
+
+  const getNameFromID = (id, list) => {
+    const item = list.find((item) => item.id === id);
+    return item ? item.name : "Valeur inconnue";
+  };
+
+  useEffect(() => {
+    displayPlant(token);
+  }, [token]);
+
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
       <header className="flex py-4">
@@ -91,7 +97,7 @@ function PlanteDetails() {
           <p className="text-black text-[14px] font-[rubik-mono]">
             {plante.name}
           </p>
-        )}{" "}
+        )}
         <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px]">
           Découvrez les avis de professionels
         </p>
@@ -100,18 +106,18 @@ function PlanteDetails() {
             <div className="flex mt-7">
               <FontAwesomeIcon icon={faSun} size="2xl" />
               <p className="ml-6 font-[poppins-regular] text-[#3E9B2A]">
-                Maximum
+                {getNameFromID(plante?.sun_exposure,sun)}
               </p>
             </div>
             <div className="flex mt-7">
               <FontAwesomeIcon icon={faTemperatureHalf} size="2xl" />
               <p className="ml-9 font-[poppins-regular] text-[#3E9B2A]">
-                19-22°C
+              {getNameFromID(plante?.temperature_range,temp)}
               </p>
             </div>
             <div className="flex mt-7">
               <FontAwesomeIcon icon={faDroplet} size="2xl" />
-              <p className="ml-8 font-[poppins-regular] text-[#3E9B2A]">Peu</p>
+              <p className="ml-8 font-[poppins-regular] text-[#3E9B2A]">{getNameFromID(plante?.watering_amount,water)}</p>
             </div>
           </div>
 
@@ -183,7 +189,7 @@ function PlanteDetails() {
             type="submit"
             className="w-[250px] h-[41px] bg-[#01B763] rounded-full text-white font-[poppins-regular] mb-5 mx-auto mt-6"
           >
-            Se connecter
+           Créer
           </button>
         </form>
       </div>

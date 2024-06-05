@@ -1,16 +1,21 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
-import Home from './component/Home';
-import AddPlant from './component/AddPlant';
-import Profil from './component/Profil';
-import PlanteDetails from './component/PlanteDetails';
-import PlantOffers from './component/PlantOffers';
-import Login from './component/Login';
-import Register from './component/Register';
-import useStore from './store/Store';
+import React,{useEffect} from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
+import Home from "./component/Home";
+import AddPlant from "./component/AddPlant";
+import Profil from "./component/Profil";
+import PlanteDetails from "./component/PlanteDetails";
+import PlantOffers from "./component/PlantOffers";
+import Login from "./component/Login";
+import Register from "./component/Register";
+import useStore from "./store/Store";
 
 function App() {
-  const store = useStore(); 
+  const store = useStore();
   const isLoggedIn = store.isLoggedIn;
 
   return (
@@ -23,9 +28,9 @@ function App() {
 function AppRoutes({ isLoggedIn }) {
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    if (!isLoggedIn && window.location.pathname !== '/register') {
-      navigate('/login');
+  useEffect(() => {
+    if (!isLoggedIn && window.location.pathname !== "/register") {
+      navigate("/login");
     }
   }, [isLoggedIn, navigate]);
 

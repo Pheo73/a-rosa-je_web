@@ -98,7 +98,7 @@ const Register = () => {
             value={formData.username}
             onChange={handleChange}
             name="username"
-            placeholder="Username*"
+            placeholder="Nom d'utilisateur*"
             className={`w-[400px] h-[52px] rounded-full p-2 mt-6 ${
               errors.username ? "border border-red-500" : ""
             }`}
@@ -168,7 +168,7 @@ const Register = () => {
             value={formData.email}
             onChange={handleChange}
             name="email"
-            placeholder="email*"
+            placeholder="Email*"
             className={`w-[400px] h-[52px] rounded-full p-2 mt-6 ${
               errors.email ? "border border-red-500" : ""
             }`}

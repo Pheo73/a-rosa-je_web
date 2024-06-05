@@ -2,7 +2,7 @@ import "../style/App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBell } from "@fortawesome/free-regular-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useStore from "../store/Store";
 
 function AddPlant() {
@@ -10,16 +10,42 @@ function AddPlant() {
     species: "",
     plantDescription: "",
     name: "",
-    plantAdress: "",
+    plantAddress: "",
+    sun_exposure: "",
+    temperature_range: "",
+    watering_amount: "",
   });
   const navigate = useNavigate();
-  const { token } = useStore();
+  const { token, getSelectValue, sun, temp, water } = useStore();
+
+  useEffect(() => {
+    const fetchSelectValues = async () => {
+      try {
+        await getSelectValue();
+      } catch (error) {
+        console.error("Error fetching select values:", error);
+      }
+    };
+
+    fetchSelectValues();
+  }, [getSelectValue]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      await addPlant(formData, token); 
+      const sunExposureId = parseInt(formData.sun_exposure);
+      const temperatureRangeId = parseInt(formData.temperature_range);
+      const wateringAmountId = parseInt(formData.watering_amount);
+  
+      const updatedFormData = {
+        ...formData,
+        sun_exposure: sunExposureId,
+        temperature_range: temperatureRangeId,
+        watering_amount: wateringAmountId,
+      };
+  
+      await addPlant(updatedFormData, token);
       navigate("/home");
     } catch (error) {
       console.error("Error adding plant:", error);
@@ -32,20 +58,20 @@ function AddPlant() {
 
   const addPlant = async (formData, token) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/plants/create/', {
-        method: 'POST',
+      const response = await fetch("http://172.16.1.43:8000/api/plants/", {
+        method: "POST",
         body: JSON.stringify(formData),
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error('Plant addition failed');
+        throw new Error("Plant addition failed");
       }
     } catch (error) {
-      console.error('Error adding plant:', error);
+      console.error("Error adding plant:", error);
       throw error;
     }
   };
@@ -80,7 +106,8 @@ function AddPlant() {
       <div className="bg-[#000000] h-56 pt-3">
         <h1 className="relative text-white text-[40px] font-[rubik-mono] ml-16">
           <span>
-            Bienvenue sur<br></br> a’rosa-je
+            Bienvenue sur
+            <br /> a’rosa-je
           </span>
           <span className="text-[#01B763]">.</span>
         </h1>
@@ -91,7 +118,11 @@ function AddPlant() {
 
       <div className="bg-[#FFFFFF] h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 mb-8">
         <h1 className="text-black text-[15px] font-[rubik-mono]">
-          <span>RENSEIGNEZ LES INFORMATIONS<br></br>DE VOTRE PLANTE</span>
+          <span>
+            RENSEIGNEZ LES INFORMATIONS
+            <br />
+            DE VOTRE PLANTE
+          </span>
           <span className="text-[#01B763]">.</span>
         </h1>
         <form onSubmit={handleSubmit} className="flex flex-col">
@@ -130,11 +161,60 @@ function AddPlant() {
           </p>
           <input
             className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-4"
-            placeholder="Adresse de la plante"
+            placeholder="Adresse de la plante
+            "
             name="plantAddress"
             value={formData.plantAddress}
             onChange={handleChange}
           />
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
+            Exposition au soleil*
+          </p>
+          <select
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-4"
+            name="sun_exposure"
+            value={formData.sun_exposure}
+            onChange={handleChange}
+          >
+            <option value="">Sélectionnez</option>
+            {sun.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
+            Gamme de température*
+          </p>
+          <select
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-4"
+            name="temperature_range"
+            value={formData.temperature_range}
+            onChange={handleChange}
+          >
+            <option value="">Sélectionnez</option>
+            {temp.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
+            Quantité d'arrosage*
+          </p>
+          <select
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-4"
+            name="watering_amount"
+            value={formData.watering_amount}
+            onChange={handleChange}
+          >
+            <option value="">Sélectionnez</option>
+            {water.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
           <button className="text-white text-[15px] font-[rubik-mono] w-64 h-14 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block">
             AJOUTER VOTRE PLANTE
           </button>

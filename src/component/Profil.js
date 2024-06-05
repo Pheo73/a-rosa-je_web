@@ -16,7 +16,7 @@ function Profil() {
   const { token } = useStore();
   const displayUser = async (token) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/user/", {
+      const response = await fetch("http://172.16.1.43:8000/api/user/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -27,8 +27,7 @@ function Profil() {
       if (!response.ok) {
         throw new Error("Plant addition failed");
       }
-      const userData = await response.json(); 
-      setUserData(userData);
+      setUserData(await response.json());
     } catch (error) {
       console.error("Error adding plant:", error);
       throw error;
@@ -36,7 +35,7 @@ function Profil() {
   };
   useEffect(() => {
     displayUser(token);
-  }, []);
+  }, [token]);
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
       <header className="flex py-4">
@@ -83,7 +82,7 @@ function Profil() {
         {userData && (
           <>
             <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-              Username*
+              Nom d'utilisateur*
             </p>
             <input
               className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"

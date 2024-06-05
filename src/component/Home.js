@@ -1,16 +1,17 @@
-import "../style/App.css";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSun, faUser, faBell } from "@fortawesome/free-regular-svg-icons";
 import {
+  faSun,
   faTemperatureHalf,
   faDroplet,
+  faUser,
+  faBell,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import React, { useEffect, useState } from "react";
 import useStore from "../store/Store";
 
 function Home() {
-  const { token } = useStore();
+  const { token, sun, temp, water,getSelectValue } = useStore(); // Importez les constantes sun, temp, et water depuis votre store
   const [userPlant, setUserPlant] = useState(null);
 
   const displayPlant = async () => {
@@ -19,7 +20,7 @@ function Home() {
         return;
       }
 
-      const response = await fetch("http://127.0.0.1:8000/api/plants/", {
+      const response = await fetch("http://172.16.1.43:8000/api/plants/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -28,18 +29,36 @@ function Home() {
       });
 
       if (!response.ok) {
-        throw new Error("Plant addition failed");
+        throw new Error("Failed to fetch plants");
       }
-      const userPlant = await response.json();
-      setUserPlant(userPlant);
+
+      setUserPlant(await response.json());
     } catch (error) {
-      console.error("Error adding plant:", error);
-      throw error;
+      console.error("Error fetching plants:", error);
     }
   };
+
   useEffect(() => {
-    displayPlant(token);
-  }, [token]);
+    displayPlant();
+  }, []);
+
+  const getNameFromID = (id, list) => {
+    const item = list.find((item) => item.id === id);
+    return item ? item.name : "Valeur inconnue";
+  };
+
+  useEffect(() => {
+    const fetchSelectValues = async () => {
+      try {
+        await getSelectValue();
+      } catch (error) {
+        console.error("Error fetching select values:", error);
+      }
+    };
+
+    fetchSelectValues();
+  }, [getSelectValue]);
+
   return (
     <div className="bg-[#1A2016] min-h-screen py-10">
       <header className="flex">
@@ -51,7 +70,7 @@ function Home() {
             <span className="text-[#01B763]">.</span>
           </h1>
           <p className="text-white font-[poppins-regular] ml-16">
-            Commencons par ajouter votre première plante !
+            Commençons par ajouter votre première plante !
           </p>
         </div>
         <div className="ml-auto mr-16">
@@ -82,7 +101,7 @@ function Home() {
           <div className="flex">
             <Link to="/addplant">
               <button className="text-white text-[15px] font-[rubik-mono] w-64 h-14 bg-[#3E9B2A] px-5 rounded-[10px] ml-28 mt-8">
-                Ajouter vôtre plante
+                Ajouter votre plante
               </button>
             </Link>
             <Link to="/plantoffers">
@@ -96,9 +115,13 @@ function Home() {
           <p className="text-white text-[15px] font-[rubik-mono]">
             Vos plantes
           </p>
-          {userPlant && (
+          {userPlant && userPlant.length > 0 ? (
             <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px] ml-8">
               {userPlant.length} Plantes
+            </p>
+          ) : (
+            <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px] ml-8">
+              0 Plantes
             </p>
           )}
         </div>
@@ -123,23 +146,22 @@ function Home() {
                       <div className="flex mt-7">
                         <FontAwesomeIcon icon={faSun} size="2xl" />
                         <p className="ml-6 font-[poppins-regular] text-[#3E9B2A]">
-                          {plant.keepres ?? "Maximum"}
+                          {getNameFromID(plant.sun_exposure, sun)}
                         </p>
                       </div>
                       <div className="flex mt-7">
                         <FontAwesomeIcon icon={faTemperatureHalf} size="2xl" />
                         <p className="ml-9 font-[poppins-regular] text-[#3E9B2A]">
-                          {plant.temperature ?? "19-22°C"}
+                          {getNameFromID(plant.temperature_range, temp)}
                         </p>
                       </div>
                       <div className="flex mt-7">
                         <FontAwesomeIcon icon={faDroplet} size="2xl" />
                         <p className="ml-8 font-[poppins-regular] text-[#3E9B2A]">
-                          {plant.water ?? "Peu"}
+                          {getNameFromID(plant.watering_amount, water)}
                         </p>
                       </div>
                     </div>
-
                     <div className="h-fit">
                       <img
                         src="./cactus.png"
@@ -156,9 +178,13 @@ function Home() {
       </section>
       <img
         src="./accueil_plante.png"
-        className="absolute z-50 ml-auto right-0 mt-[-32rem]"
+        className={`${
+          userPlant === null || userPlant.length === 0
+            ? "ml-auto right-0 mt-[-20rem]"
+            : "absolute z-50 ml-auto right-0 mt-[-32rem]"
+        }`}
         alt="accueil"
-      ></img>
+      />
     </div>
   );
 }
