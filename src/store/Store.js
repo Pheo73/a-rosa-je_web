@@ -13,7 +13,8 @@ const useStore = create((set) => ({
   user:{},
   offers:[],
   registerSuccess: false,
-  setRegisterSuccess: (value) => set({ registerSuccess: value }),  login: async (username, password) => {
+  setRegisterSuccess: (value) => set({ registerSuccess: value }),  
+  login: async (username, password) => {
     try {
       const token = await authService.login(username, password);
       localStorage.setItem(TOKEN_KEY, token);

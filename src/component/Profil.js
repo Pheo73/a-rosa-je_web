@@ -174,7 +174,7 @@ function Profil() {
               onClick={handleLogout}
               className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block"
             >
-              DÉCONNECTION
+              DÉCONNEXION
             </button>
           </div>
         </form>

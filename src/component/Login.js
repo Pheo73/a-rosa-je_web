@@ -5,14 +5,14 @@ import useStore from '../store/Store';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const {store, registerSuccess, setRegisterSuccess } = useStore(); // Extraire registerSuccess et setRegisterSuccess du hook
+  const { registerSuccess, setRegisterSuccess,login } = useStore();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await store.login(username, password);
+      await login(username, password);
       navigate('/home'); 
       setError(null); 
 
