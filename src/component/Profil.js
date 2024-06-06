@@ -52,7 +52,7 @@ console.log(updateSuccess);
   const handleConfirmUpdate = async () => {
     try {
       const response = await axios.put(
-        "http://172.16.1.43:8000/api/user/update/",
+        "http://127.0.0.1:8000/api/user/update/",
         { ...formData, password },
         {
           headers: {

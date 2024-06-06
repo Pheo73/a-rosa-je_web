@@ -14,7 +14,7 @@ function PlanteDetails() {
   const plante = userPlant && userPlant.find((plant) => parseInt(plant.plantId) === parseInt(plantId));
   const getCities = async (token) => {
     try {
-      const response = await fetch("http://172.16.1.43:8000/api/cities/", {
+      const response = await fetch("http://127.0.0.1:8000/api/cities/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -45,7 +45,7 @@ function PlanteDetails() {
 
   const displayPlant = async (token) => {
     try {
-      const response = await fetch("http://172.16.1.43:8000/api/plants/", {
+      const response = await fetch("http://127.0.0.1:8000/api/plants/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +85,7 @@ function PlanteDetails() {
 
   const addGuard = async (formData, token) => {
     try {
-      const response = await fetch("http://172.16.1.43:8000/api/guardian-requests/", {
+      const response = await fetch("http://127.0.0.1:8000/api/guardian-requests/", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
