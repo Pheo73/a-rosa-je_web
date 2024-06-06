@@ -61,6 +61,28 @@ const planteService = {
       throw error;
     }
   },
+ async getOffers(token) {
+    try {
+      const response = await fetch(
+        "http://172.16.1.43:8000/api/guardian-requests/",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+    } catch (error) {
+      console.error("Get offers failed:", error);
+      throw error;
+    }
+  },
 };
 
 export default planteService;

@@ -61,6 +61,25 @@ const authService = {
       throw error;
     }
   },
+  async displayUser(token) {
+    try {
+      const response = await fetch("http://172.16.1.43:8000/api/user/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+    } catch (error) {
+      console.error("Error adding plant:", error);
+      throw error;
+    }
+  },
 };
 
 export default authService;

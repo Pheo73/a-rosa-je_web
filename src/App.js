@@ -13,6 +13,7 @@ import PlantOffers from "./component/PlantOffers";
 import Login from "./component/Login";
 import Register from "./component/Register";
 import useStore from "./store/Store";
+import Map from "./component/Map";
 
 function App() {
   const store = useStore();
@@ -44,6 +45,7 @@ function AppRoutes({ isLoggedIn }) {
       <Route path="/plantoffers" element={<PlantOffers />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/offersMap" element={<Map />} />
     </Routes>
   );
 }

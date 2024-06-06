@@ -12,11 +12,10 @@ import useStore from "../store/Store";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 function Home() {
-  const { token, sun, temp, water, getSelectValue } = useStore(); // Importez les constantes sun, temp, et water depuis votre store
+  const { token, sun, temp, water,getSelectValue } = useStore(); // Importez les constantes sun, temp, et water depuis votre store
   const [userPlant, setUserPlant] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlant, setSelectedPlant] = useState(null);
-
   const displayPlant = async () => {
     try {
       if (!token) {
@@ -163,13 +162,18 @@ function Home() {
         </div>
 
         {userPlant && (
-          <div className="mt-5 ml-16 flex gap-4 overflow-x-auto max-w-[1000px] p-4 scrollbar-custom">
+          <div className="mt-5 ml-16 flex gap-4 overflow-x-auto max-w-[1000px] p-4 scrollbar-custom ">
             {userPlant.map((plant, index) => (
-              <div className="block w-fit" key={index}>
+              <Link
+                to={`/plantedetails/${plant.plantId}`}
+                className="block w-fit"
+                key={index}
+              >
                 <div className="w-[330px] h-[297px] bg-white rounded-[10px] pt-[35px] pl-7 parent-div">
-                  <p className="text-black text-[14px] font-[rubik-mono] w-full flex">
+                  <p className="text-black text-[14px] font-[rubik-mono]">
                     {plant.name}
-                    <FontAwesomeIcon icon={faTrashCan} className="trash-icon ml-52 mt-[-20px] hover:text-red-500" onClick={(e) => { e.preventDefault(); handleDeleteClick(plant); }} />
+                    <FontAwesomeIcon icon={faTrashCan} className="trash-icon ml-48 hover:text-red-500" onClick={(e) => { e.preventDefault(); handleDeleteClick(plant); }} />
+
                   </p>
                   <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px]">
                     Découvrez les avis de professionnels
@@ -204,7 +208,7 @@ function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

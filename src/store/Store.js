@@ -10,6 +10,8 @@ const useStore = create((set) => ({
   sun: [],
   temp: [],
   water: [],
+  user:{},
+  offers:[],
   login: async (username, password) => {
     try {
       const token = await authService.login(username, password);
@@ -58,6 +60,26 @@ const useStore = create((set) => ({
       throw error;
     }
   },
+  getUser:async()=>{
+    try {
+      const token = useStore.getState().token;
+      const user = await authService.displayUser(token);
+      set ({user});
+    }catch (error) {
+      console.error("Error fetching user info:", error);
+      throw error;
+    }
+  },
+  getOffer:async()=>{
+    try {
+      const token = useStore.getState().token;
+      const offers = await planteService.getOffers(token);
+      set ({offers});
+    }catch (error) {
+      console.error("Error fetching user info:", error);
+      throw error;
+    }
+  }
 }));
 
 export default useStore;

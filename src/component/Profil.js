@@ -8,33 +8,14 @@ import React, { useEffect, useState } from "react";
 function Profil() {
   const store = useStore();
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
   const handleLogout = () => {
     store.logout();
     navigate("/login");
   };
-  const { token } = useStore();
-  const displayUser = async (token) => {
-    try {
-      const response = await fetch("http://172.16.1.43:8000/api/user/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  const { token,user,getUser } = useStore();
 
-      if (!response.ok) {
-        throw new Error("Plant addition failed");
-      }
-      setUserData(await response.json());
-    } catch (error) {
-      console.error("Error adding plant:", error);
-      throw error;
-    }
-  };
   useEffect(() => {
-    displayUser(token);
+    getUser();
   }, [token]);
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
@@ -63,9 +44,9 @@ function Profil() {
       </header>
       <div className="bg-[#000000] h-56 pt-3">
         <h1 className="relative text-white text-[40px] font-[rubik-mono]  ml-16">
-          {userData ? (
+          {user ? (
             <span>
-              {userData.first_name} {userData.last_name}
+              {user.first_name} {user.last_name}
             </span>
           ) : (
             <span></span>
@@ -79,7 +60,7 @@ function Profil() {
         <h1 className=" text-black text-[15px] font-[rubik-mono]">
           Vos informations
         </h1>
-        {userData && (
+        {user && (
           <>
             <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
               Nom d'utilisateur*
@@ -88,28 +69,28 @@ function Profil() {
               className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
               placeholder="Username"
               type="email"
-              value={userData.username}
+              value={user.username}
             />
             <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Prénom*</p>
             <input
               className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
               placeholder="John"
               type="text"
-              value={userData.first_name}
+              value={user.first_name}
             />
             <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Nom*</p>
             <input
               className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
               placeholder="Smoth"
               type="text"
-              value={userData.last_name}
+              value={user.last_name}
             />
             <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Email*</p>
             <input
               className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
               placeholder="email@adress.com"
               type="text"
-              value={userData.email}
+              value={user.email}
             />
             <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
               Téléphone

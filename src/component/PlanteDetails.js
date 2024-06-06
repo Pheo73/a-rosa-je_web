@@ -1,23 +1,18 @@
 import "../style/App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSun, faUser, faBell } from "@fortawesome/free-regular-svg-icons";
-import { Link } from "react-router-dom";
-import {
-  faTemperatureHalf,
-  faDroplet,
-} from "@fortawesome/free-solid-svg-icons";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { faTemperatureHalf, faDroplet } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from "react";
 import useStore from "../store/Store";
 
 function PlanteDetails() {
   const { plantId } = useParams();
-  const { token, sun, temp, water } = useStore();
+  const { token, sun, temp, water,getOffer,offers,user,getUser,getSelectValue } = useStore();
   const [userPlant, setUserPlant] = useState(null);
-  const [cities,setCities] = useState(null);
-  const plante = userPlant && userPlant.find(plant => parseInt(plant.plantId) === parseInt(plantId));
-
-  const getCities = async(token)=>{
+  const [cities, setCities] = useState(null);
+  const plante = userPlant && userPlant.find((plant) => parseInt(plant.plantId) === parseInt(plantId));
+  const getCities = async (token) => {
     try {
       const response = await fetch("http://172.16.1.43:8000/api/cities/", {
         method: "GET",
@@ -36,15 +31,16 @@ function PlanteDetails() {
       console.error("Get cities failed:", error);
       throw error;
     }
-  }
+  };
+
   const [formData, setFormData] = useState({
-    plant: plantId ,
+    plant: plantId,
     start_date: "",
     end_date: "",
     address: "",
     postal_code: "",
     price: "",
-    city:0,
+    city: "", 
   });
 
   const displayPlant = async (token) => {
@@ -68,16 +64,25 @@ function PlanteDetails() {
     }
   };
 
-
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try{
-      await addGuard(formData,token);
+    try {
+      const selectedCity = cities.find((city) => city.cityName === formData.city);
+      if (selectedCity) {
+        const dataToSend = {
+          ...formData,
+          city: selectedCity.cityId,
+        };
+
+        await addGuard(dataToSend, token); 
+      } else {
+        console.error("City not found");
+      }
     } catch (error) {
       console.error("Error adding plant:", error);
     }
   };
+
   const addGuard = async (formData, token) => {
     try {
       const response = await fetch("http://172.16.1.43:8000/api/guardian-requests/", {
@@ -104,19 +109,22 @@ function PlanteDetails() {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   useEffect(() => {
     displayPlant(token);
     getCities(token);
+    getOffer();
+    getUser();
+    getSelectValue();
   }, [token]);
-
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
       <header className="flex py-4">
         <div className="mt-2">
-          <button className="text-black text-[20px] font-[rubik-mono]  ml-16">
+          <button className="text-black text-[20px] font-[rubik-mono] ml-16">
             <Link to="/home">Home</Link>
           </button>
         </div>
@@ -126,7 +134,7 @@ function PlanteDetails() {
               icon={faBell}
               color="white"
               size="1x"
-              className="bg-[#464C44] p-2  rounded-full mr-3"
+              className="bg-[#464C44] p-2 rounded-full mr-3"
             />
             <Link to="/profil">
               <FontAwesomeIcon
@@ -140,7 +148,7 @@ function PlanteDetails() {
         </div>
       </header>
       <div className="bg-[#000000] h-56 pt-3">
-        <h1 className="relative text-white text-[40px] font-[rubik-mono]  ml-16">
+        <h1 className="relative text-white text-[40px] font-[rubik-mono] ml-16">
           <span>
             Votre<br></br> plante
           </span>
@@ -161,24 +169,27 @@ function PlanteDetails() {
           Découvrez les avis de professionels
         </p>
         <div className="flex">
-          <div>
+          {plante && (<div>
             <div className="flex mt-7">
               <FontAwesomeIcon icon={faSun} size="2xl" />
               <p className="ml-6 font-[poppins-regular] text-[#3E9B2A]">
-                {getNameFromID(plante?.sun_exposure,sun)}
+                {getNameFromID(plante.sun_exposure, sun)}
               </p>
             </div>
             <div className="flex mt-7">
               <FontAwesomeIcon icon={faTemperatureHalf} size="2xl" />
               <p className="ml-9 font-[poppins-regular] text-[#3E9B2A]">
-              {getNameFromID(plante?.temperature_range,temp)}
+                {getNameFromID(plante.temperature_range, temp)}
               </p>
             </div>
             <div className="flex mt-7">
               <FontAwesomeIcon icon={faDroplet} size="2xl" />
-              <p className="ml-8 font-[poppins-regular] text-[#3E9B2A]">{getNameFromID(plante?.watering_amount,water)}</p>
+              <p className="ml-8 font-[poppins-regular] text-[#3E9B2A]">
+                {getNameFromID(plante.watering_amount, water)}
+              </p>
             </div>
-          </div>
+          </div>)}
+          
 
           <div className="h-fit">
             <img
@@ -206,19 +217,33 @@ function PlanteDetails() {
               type="date"
               className="border border-black p-1 rounded-md mr-16"
               value={formData.start_date}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData({ ...formData, start_date: e.target.value })
+              }
             ></input>
             <p className="font-[poppins-regular] text-black mr-3">Fin :</p>
             <input
               type="date"
               className="border border-black p-1 rounded-md"
-              value={formData.start_date}
-              onChange={handleChange}
+              value={formData.end_date}
+              onChange={(e) =>
+                setFormData({ ...formData, end_date: e.target.value })
+              }
             ></input>
           </div>
-          <p className="mb-3 font-[poppins-medium] text-[#3E9B2A]">
-            Adresse de la plante
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
+            Rémunération
           </p>
+          <input
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-6"
+            placeholder="20€"
+            type="number"
+            value={formData.price}
+            onChange={(e) => {
+              setFormData({ ...formData, price: e.target.value });
+            }}
+          ></input>
+
           <div className="flex ">
             <div className="mr-16">
               <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
@@ -227,19 +252,19 @@ function PlanteDetails() {
               <input
                 className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
                 placeholder="94 rue voltaire"
-                type="address"
+                type="text"
+                name="address"
                 value={formData.address}
-              onChange={handleChange}
+                onChange={handleChange}
               ></input>
-              <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-                Ville
-              </p>
+              <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Ville</p>
               <select
                 className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-                type="text"
+                name="city"
                 value={formData.city}
-              onChange={handleChange}
+                onChange={handleChange}
               >
+                <option value="">Sélectionnez</option>
                 {cities?.map((city) => (
                   <option key={city.cityId} value={city.cityName}>
                     {city.cityName}
@@ -248,11 +273,14 @@ function PlanteDetails() {
               </select>
             </div>
             <div>
-              <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Code Postal</p>
+              <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
+                Code Postal
+              </p>
               <input
                 className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
                 placeholder="69100"
                 type="text"
+                name="postal_code"
                 value={formData.postal_code}
                 onChange={handleChange}
               ></input>
@@ -262,10 +290,55 @@ function PlanteDetails() {
             type="submit"
             className="w-[250px] h-[41px] bg-[#01B763] rounded-full text-white font-[poppins-regular] mb-5 mx-auto mt-6"
           >
-           Créer
+            Créer
           </button>
         </form>
       </div>
+      <div className="bg-[#FFFFFF] h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 mb-8">
+      <p className="text-black text-[14px] font-[rubik-mono]">Vos demande de garde</p>
+      <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px]">
+          {(offers.filter((offer)=>offer.plant === plante?.plantId && offer.username === user.username).length)} demande
+        </p>
+      {offers && plante && offers.filter((offer)=>offer.plant === plante?.plantId && offer.username === user.username)?.map((offer) => (
+            <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2">
+              <p className="text-black text-[15px] font-[rubik-mono]">
+                {offer.first_name} {offer.last_name}
+              </p>
+              <div className="flex">
+                <div>
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    size="2xl"
+                    className="mt-8"
+                    color="green"
+                  />
+                </div>
+                <div className="ml-6 mt-4">
+                  <div className="flex mb-2 items-center">
+                    <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
+                      Date
+                    </p>
+                    <p className="align-middle mt-0 mb-0">
+                      {offer.formatted_dates}
+                    </p>
+                  </div>
+                  <div className="flex mb-2 items-center">
+                    <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
+                      Ville
+                    </p>
+                    <p className="align-middle mt-0 mb-0">{offer.city_name}</p>
+                  </div>
+                  <div className="flex">
+                    <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
+                      Prix
+                    </p>
+                    <p className="align-middle mt-0 mb-0">{offer.price}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          </div>
       <div className="bg-[#FFFFFF] h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 mb-8">
         <p className="text-black text-[14px] font-[rubik-mono]">Commentaire</p>
         <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px]">

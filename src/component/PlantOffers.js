@@ -6,32 +6,12 @@ import useStore from "../store/Store";
 import React, { useEffect, useState } from "react";
 
 function PlantOffers() {
-  const { token } = useStore();
-const [offers,setOffers]=useState();
-  const getOffers = async(token)=>{
-    try {
-      const response = await fetch("http://172.16.1.43:8000/api/guardian-requests/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  const { token,user,getUser,getOffer,offers } = useStore();
 
-      if (!response.ok) {
-        throw new Error("Get offers failed");
-      }
-      const responseJson = await response.json();
-      setOffers(responseJson);
-    } catch (error) {
-      console.error("Get offers failed:", error);
-      throw error;
-    }
-  }
-
-  useEffect(()=>{
-    getOffers(token);
-  },[token])
+  useEffect(() => {
+    getOffer();
+    getUser();
+  }, [token]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -74,41 +54,53 @@ const [offers,setOffers]=useState();
         </div>
         <div className="bg-[#FFFFFF] h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 mb-auto">
           <p className="text-black text-[15px] font-[rubik-mono]">
-            Selectionner la plantes que vous souhaitez garder
+            Selectionner la plante que vous souhaitez garder
           </p>
-          <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px] mt-5">
-            Filtres
-          </p>
-          {offers?.map((offer, index) => (
-          <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2">
-            <p className="text-black text-[15px] font-[rubik-mono]">
-              {offer.first_name} {offer.last_name}
-            </p>
-            <div className="flex">
-              <div>
-                <FontAwesomeIcon icon={faUser} size="2xl" className="mt-8" color="green" />
-              </div>
-              <div className="ml-6 mt-4">
-                <div className="flex mb-2">
-                  <p className="text-black text-[13px] font-[rubik-mono] mr-6">Dates</p>
-                  <p>{offer.start_date} / {offer.end_date}</p>
+          <Link to={`/offersMap`} className="font-[poppins-regular] text-[#9E9E9E] text-[13px] mt-5">
+            Afficher la map
+          </Link>
+          {offers && offers.filter((offer)=>offer.username !== user.username)?.map((offer) => (
+            <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2">
+              <p className="text-black text-[15px] font-[rubik-mono]">
+                {offer.first_name} {offer.last_name}
+              </p>
+              <div className="flex">
+                <div>
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    size="2xl"
+                    className="mt-8"
+                    color="green"
+                  />
                 </div>
-                <div className="flex mb-2">
-                  <p className="text-black text-[13px] font-[rubik-mono] mr-6">Villes</p>
-                  <p>{offer.city}</p>
-                </div>
-                <div className="flex">
-                  <p className="text-black text-[13px] font-[rubik-mono] mr-6">Prix</p>
-                  <p>{offer.price}</p>
+                <div className="ml-6 mt-4">
+                  <div className="flex mb-2 items-center">
+                    <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
+                      Date
+                    </p>
+                    <p className="align-middle mt-0 mb-0">
+                      {offer.formatted_dates}
+                    </p>
+                  </div>
+                  <div className="flex mb-2 items-center">
+                    <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
+                      Ville
+                    </p>
+                    <p className="align-middle mt-0 mb-0">{offer.city_name}</p>
+                  </div>
+                  <div className="flex">
+                    <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
+                      Prix
+                    </p>
+                    <p className="align-middle mt-0 mb-0">{offer.price}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           ))}
         </div>
       </div>
-      <footer className="w-full bg-black h-11 mt-auto flex items-center justify-center text-white">
-      </footer>
+      <footer className="w-full bg-black h-11 mt-auto flex items-center justify-center text-white"></footer>
     </div>
   );
 }
