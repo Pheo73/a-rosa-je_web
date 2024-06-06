@@ -91,7 +91,7 @@ const Register = () => {
   return (
     <div className="w-full h-full bg-[#1A2016] bg-[url('login.png')] bg-left bg-no-repeat pt-10 pb-10 flex flex-col justify-center items-center">
       <h1 className="font-[rubik-mono] text-white text-[40px] mb-8">
-        A'rrosa-je
+        A'rosa-je
       </h1>
       <div className="w-[644px] h-auto bg-white bg-opacity-50 rounded-lg p-10 mx-auto flex flex-col items-center justify-center">
         <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center">
