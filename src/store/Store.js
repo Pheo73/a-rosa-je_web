@@ -12,7 +12,8 @@ const useStore = create((set) => ({
   water: [],
   user:{},
   offers:[],
-  login: async (username, password) => {
+  registerSuccess: false,
+  setRegisterSuccess: (value) => set({ registerSuccess: value }),  login: async (username, password) => {
     try {
       const token = await authService.login(username, password);
       localStorage.setItem(TOKEN_KEY, token);
@@ -25,6 +26,7 @@ const useStore = create((set) => ({
   register: async (formData) => {
     try {
       await authService.register(formData);
+      set({ registerSuccess: true });
     } catch (error) {
       throw new Error("Registration failed");
     }

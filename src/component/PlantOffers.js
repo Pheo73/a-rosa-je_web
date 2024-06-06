@@ -92,7 +92,7 @@ function PlantOffers() {
                     <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
                       Prix
                     </p>
-                    <p className="align-middle mt-0 mb-0">{offer.price}</p>
+                    <p className="align-middle mt-0 mb-0">{offer.formatted_price}</p>
                   </div>
                 </div>
               </div>

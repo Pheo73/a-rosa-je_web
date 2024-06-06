@@ -16,10 +16,8 @@ function Profil() {
     email: "",
     password: ""
   });
-  const [showModal, setShowModal] = useState(false); 
   const [password, setPassword] = useState(""); 
   const [updateSuccess, setUpdateSuccess] = useState(false); 
-console.log(updateSuccess);
   useEffect(() => {
     getUser();
   }, [token, getUser]);
@@ -46,7 +44,6 @@ console.log(updateSuccess);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setShowModal(true);
   };
 
   const handleConfirmUpdate = async () => {
@@ -67,7 +64,6 @@ console.log(updateSuccess);
           
         
       }
-      setShowModal(false);
     } catch (error) {
       console.error("Erreur lors de la mise à jour des informations :", error);
     }

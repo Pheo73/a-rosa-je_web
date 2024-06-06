@@ -93,7 +93,7 @@ const Register = () => {
       <h1 className="font-[rubik-mono] text-white text-[40px] mb-8">
         A'rosa-je
       </h1>
-      <div className="w-[644px] h-auto bg-white bg-opacity-50 rounded-lg p-10 mx-auto flex flex-col items-center justify-center">
+      <div className="max-w-[644px] w-[80vw] h-auto bg-white bg-opacity-50 rounded-lg p-10 mx-auto flex flex-col items-center justify-center">
         <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center">
           {errors.global && (
             <p className="text-red-500 mb-4">{errors.global}</p>
@@ -105,7 +105,7 @@ const Register = () => {
             onChange={handleChange}
             name="username"
             placeholder="Nom d'utilisateur*"
-            className={`w-[400px] h-[52px] rounded-full p-2 mt-6 ${errors.username ? "border border-red-500" : ""}`}
+            className={`max-w-[400px] w-[70vw] h-[52px] rounded-full p-2 mt-6 ${errors.username ? "border border-red-500" : ""}`}
           />
           {errors.username && (
             <p className="text-red-500">{errors.username}</p>
@@ -117,7 +117,7 @@ const Register = () => {
             onChange={handleChange}
             name="password"
             placeholder="Mot de passe*"
-            className={`w-[400px] h-[52px] rounded-full p-2 mt-6 ${errors.password ? "border border-red-500" : ""}`}
+            className={`max-w-[400px] w-[70vw] h-[52px] rounded-full p-2 mt-6 ${errors.password ? "border border-red-500" : ""}`}
           />
           {errors.password && (
             <p className="text-red-500">{errors.password}</p>
@@ -129,7 +129,7 @@ const Register = () => {
             onChange={handleChange}
             name="password2"
             placeholder="Confirmation du mot de passe*"
-            className={`w-[400px] h-[52px] rounded-full p-2 mt-6 ${errors.password2 ? "border border-red-500" : ""}`}
+            className={`max-w-[400px] w-[70vw] h-[52px] rounded-full p-2 mt-6 ${errors.password2 ? "border border-red-500" : ""}`}
           />
           {errors.password2 && (
             <p className="text-red-500">{errors.password2}</p>
@@ -141,7 +141,7 @@ const Register = () => {
             onChange={handleChange}
             name="first_name"
             placeholder="Prénom*"
-            className={`w-[400px] h-[52px] rounded-full p-2 mt-6 ${errors.first_name ? "border border-red-500" : ""}`}
+            className={`max-w-[400px] w-[70vw] h-[52px] rounded-full p-2 mt-6 ${errors.first_name ? "border border-red-500" : ""}`}
           />
           {errors.first_name && (
             <p className="text-red-500">{errors.first_name}</p>
@@ -153,7 +153,7 @@ const Register = () => {
             onChange={handleChange}
             name="last_name"
             placeholder="Nom*"
-            className={`w-[400px] h-[52px] rounded-full p-2 mt-6 ${errors.last_name ? "border border-red-500" : ""}`}
+            className={`max-w-[400px] w-[70vw] h-[52px] rounded-full p-2 mt-6 ${errors.last_name ? "border border-red-500" : ""}`}
           />
           {errors.last_name && (
             <p className="text-red-500">{errors.last_name}</p>
@@ -165,7 +165,7 @@ const Register = () => {
             onChange={handleChange}
             name="email"
             placeholder="Email*"
-            className={`w-[400px] h-[52px] rounded-full p-2 mt-6 ${errors.email ? "border border-red-500" : ""}`}
+            className={`max-w-[400px] w-[70vw] h-[52px] rounded-full p-2 mt-6 ${errors.email ? "border border-red-500" : ""}`}
           />
           {errors.email && (
             <p className="text-red-500 mb-6">{errors.email}</p>
@@ -178,8 +178,8 @@ const Register = () => {
               onChange={handleCheckboxChange}
               className={`mr-2 ${errors.acceptCGU ? "border border-red-500" : ""}`}
             />
-            <label htmlFor="acceptCGU" className={`text-white ${errors.acceptCGU ? "text-red-500" : ""}`}>
-              J'accepte les <Link to={'/cgu'}>CGU</Link>
+            <label htmlFor="acceptCGU" className={`text-black ${errors.acceptCGU ? "text-red-500" : ""}`}>
+              J'accepte les <Link to={'/cgu'} className="hover:bg-[#00000028] rounded-lg p-1">CGU</Link>
             </label>
           </div>
           {errors.acceptCGU && (
