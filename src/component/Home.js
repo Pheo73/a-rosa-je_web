@@ -202,7 +202,7 @@ function Home() {
                     <div className="h-fit">
                       <img
                         src={plant.image_url}
-                        className="max-h-52 ml-12"
+                        className="max-h-52 max-w-36 ml-4"
                         alt={plant.species}
                       />
                     </div>
