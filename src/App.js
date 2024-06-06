@@ -15,7 +15,7 @@ import Register from "./component/Register";
 import useStore from "./store/Store";
 import Map from "./component/Map";
 import OfferDetails from "./component/OfferDetails";
-import Cgu from "./component/cgu";
+import Cgu from "./component/Cgu";
 
 function App() {
   const store = useStore();
