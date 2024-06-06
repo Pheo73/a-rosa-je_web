@@ -1,9 +1,8 @@
-import "../style/App.css";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBell } from "@fortawesome/free-regular-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import useStore from "../store/Store";
-import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 function Profil() {
@@ -17,7 +16,10 @@ function Profil() {
     email: "",
     password: ""
   });
-
+  const [showModal, setShowModal] = useState(false); 
+  const [password, setPassword] = useState(""); 
+  const [updateSuccess, setUpdateSuccess] = useState(false); 
+console.log(updateSuccess);
   useEffect(() => {
     getUser();
   }, [token, getUser]);
@@ -44,10 +46,14 @@ function Profil() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setShowModal(true);
+  };
+
+  const handleConfirmUpdate = async () => {
     try {
       const response = await axios.put(
-        "/api/user/update/",
-        formData,
+        "http://172.16.1.43:8000/api/user/update/",
+        { ...formData, password },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -55,12 +61,15 @@ function Profil() {
         }
       );
       if (response.status === 200) {
-        alert("Informations mises à jour avec succès !");
-        getUser(); // Rafraîchir les informations utilisateur
+        setUpdateSuccess(true);
+        getUser();
+        setTimeout(() => {setUpdateSuccess(false)},[1000]);
+          
+        
       }
+      setShowModal(false);
     } catch (error) {
       console.error("Erreur lors de la mise à jour des informations :", error);
-      alert("Erreur lors de la mise à jour des informations.");
     }
   };
 
@@ -155,12 +164,12 @@ function Profil() {
             placeholder="Nouveau mot de passe"
             type="password"
             name="password"
-            value={formData.password}
-            onChange={handleInputChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} 
           />
           <div className="flex mx-auto justify-center">
             <button
-              type="submit"
+              onClick={handleConfirmUpdate}
               className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block"
             >
               SAUVEGARDER
@@ -173,10 +182,15 @@ function Profil() {
             </button>
           </div>
         </form>
-        <button className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#E94C3C] px-5 rounded-[10px] mx-auto mt-8 block">
+        <button  className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#E94C3C] px-5 rounded-[10px] mx-auto mt-8 block">
           SUPPRIMER VOTRE COMPTE
         </button>
       </div>
+      {updateSuccess && (
+        <div className="bg-green-500 p-3 rounded-md fixed bottom-0 right-8 mb-4 mx-auto max-w-md">
+          <p className="text-white text-sm">Informations mises à jour avec succès !</p>
+        </div>
+      )}
       <footer className="w-100% bg-black h-11"></footer>
     </div>
   );

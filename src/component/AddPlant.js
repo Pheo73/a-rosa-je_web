@@ -14,10 +14,10 @@ function AddPlant() {
     temperature_range: "",
     watering_amount: "",
   });
-  const [imageFile, setImageFile] = useState(null); // New state for image file
+  const [imageFile, setImageFile] = useState(null); 
   const navigate = useNavigate();
   const { token, getSelectValue, sun, temp, water } = useStore();
-  const [plant, setPlant] = useState(null); // State to store the newly created plant
+  const [plant, setPlant] = useState(null); 
 
   useEffect(() => {
     const fetchSelectValues = async () => {
@@ -46,11 +46,9 @@ function AddPlant() {
         watering_amount: wateringAmountId,
       };
 
-      // Add the plant and get the newly created plant ID
       const newPlant = await addPlant(updatedFormData, token);
       setPlant(newPlant);
 
-      // Upload the plant image if there's a file selected
       if (imageFile) {
         await uploadPlantImage(newPlant.plantId, imageFile, token);
       }
@@ -85,7 +83,7 @@ function AddPlant() {
         throw new Error("Plant addition failed");
       }
 
-      return await response.json(); // Return the newly created plant object
+      return await response.json();
     } catch (error) {
       console.error("Error adding plant:", error);
       throw error;

@@ -12,7 +12,7 @@ import useStore from "../store/Store";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 function Home() {
-  const { token, sun, temp, water,getSelectValue } = useStore(); // Importez les constantes sun, temp, et water depuis votre store
+  const { token, sun, temp, water,getSelectValue } = useStore();
   const [userPlant, setUserPlant] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlant, setSelectedPlant] = useState(null);

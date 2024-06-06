@@ -6,8 +6,6 @@ import { faUser, faBell, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import useStore from "../store/Store";
-
-// Import des icônes Leaflet
 import markerIconPng from 'leaflet/dist/images/marker-icon.png';
 import markerShadowPng from 'leaflet/dist/images/marker-shadow.png';
 

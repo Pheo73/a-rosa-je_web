@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBell } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "react-router-dom";
 import useStore from "../store/Store";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 function PlantOffers() {
   const { token,user,getUser,getOffer,offers } = useStore();
@@ -15,14 +15,14 @@ function PlantOffers() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="bg-[#D9D9D9] flex-grow">
+      <div className="bg-[#D9D9D9] flex-grow ">
         <header className="flex py-4">
           <div className="mt-2">
             <button className="text-black text-[20px] font-[rubik-mono] ml-16">
               <Link to="/home">Home</Link>
             </button>
           </div>
-          <div className="ml-auto mr-16">
+          <div className="ml-auto mr-16 ">
             <div className="flex">
               <FontAwesomeIcon
                 icon={faBell}
@@ -41,7 +41,7 @@ function PlantOffers() {
             </div>
           </div>
         </header>
-        <div className="bg-[#000000] h-56 pt-3">
+        <div className="bg-[#000000] h-56 pt-3 ">
           <h1 className="relative text-white text-[40px] font-[rubik-mono] ml-16">
             <span>
               Bienvenue sur<br></br> a’rosa-je
@@ -60,7 +60,7 @@ function PlantOffers() {
             Afficher la map
           </Link>
           {offers && offers.filter((offer)=>offer.username !== user.username)?.map((offer) => (
-            <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2">
+            <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2 ">
               <p className="text-black text-[15px] font-[rubik-mono]">
                 {offer.first_name} {offer.last_name}
               </p>
@@ -99,8 +99,8 @@ function PlantOffers() {
             </div>
           ))}
         </div>
+      <footer className="w-full bg-black h-11 flex items-center justify-center text-white mt-8"></footer>
       </div>
-      <footer className="w-full bg-black h-11 mt-auto flex items-center justify-center text-white"></footer>
     </div>
   );
 }
