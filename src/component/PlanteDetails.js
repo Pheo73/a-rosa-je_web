@@ -39,7 +39,7 @@ function PlanteDetails() {
     end_date: "",
     address: "",
     postal_code: "",
-    formatted_price: "",
+    price: "",
     city: "", 
   });
 
@@ -238,9 +238,9 @@ function PlanteDetails() {
             className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-6"
             placeholder="20€"
             type="number"
-            value={formData.formatted_price}
+            value={formData.price}
             onChange={(e) => {
-              setFormData({ ...formData, formatted_price: e.target.value });
+              setFormData({ ...formData, price: e.target.value });
             }}
           ></input>
 
@@ -332,7 +332,7 @@ function PlanteDetails() {
                     <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
                       Prix
                     </p>
-                    <p className="align-middle mt-0 mb-0">{offer.price}</p>
+                    <p className="align-middle mt-0 mb-0">{offer.formatted_price}</p>
                   </div>
                 </div>
               </div>
