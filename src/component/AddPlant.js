@@ -14,8 +14,10 @@ function AddPlant() {
     temperature_range: "",
     watering_amount: "",
   });
+  const [imageFile, setImageFile] = useState(null); // New state for image file
   const navigate = useNavigate();
   const { token, getSelectValue, sun, temp, water } = useStore();
+  const [plant, setPlant] = useState(null); // State to store the newly created plant
 
   useEffect(() => {
     const fetchSelectValues = async () => {
@@ -31,20 +33,28 @@ function AddPlant() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const sunExposureId = parseInt(formData.sun_exposure);
       const temperatureRangeId = parseInt(formData.temperature_range);
       const wateringAmountId = parseInt(formData.watering_amount);
-  
+
       const updatedFormData = {
         ...formData,
         sun_exposure: sunExposureId,
         temperature_range: temperatureRangeId,
         watering_amount: wateringAmountId,
       };
-  
-      await addPlant(updatedFormData, token);
+
+      // Add the plant and get the newly created plant ID
+      const newPlant = await addPlant(updatedFormData, token);
+      setPlant(newPlant);
+
+      // Upload the plant image if there's a file selected
+      if (imageFile) {
+        await uploadPlantImage(newPlant.plantId, imageFile, token);
+      }
+
       navigate("/home");
     } catch (error) {
       console.error("Error adding plant:", error);
@@ -53,6 +63,11 @@ function AddPlant() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
   };
 
   const addPlant = async (formData, token) => {
@@ -69,8 +84,33 @@ function AddPlant() {
       if (!response.ok) {
         throw new Error("Plant addition failed");
       }
+
+      return await response.json(); // Return the newly created plant object
     } catch (error) {
       console.error("Error adding plant:", error);
+      throw error;
+    }
+  };
+
+  const uploadPlantImage = async (plantId, imageFile, token) => {
+    try {
+      const formData = new FormData();
+      formData.append("plant", plantId);
+      formData.append("image", imageFile);
+
+      const response = await fetch("http://172.16.1.43:8000/api/plant-images/", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Image upload failed");
+      }
+    } catch (error) {
+      console.error("Error uploading plant image:", error);
       throw error;
     }
   };
@@ -203,6 +243,14 @@ function AddPlant() {
               </option>
             ))}
           </select>
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
+           Ajouter une image
+          </p>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
           <button className="text-white text-[15px] font-[rubik-mono] w-64 h-14 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block">
             AJOUTER VOTRE PLANTE
           </button>

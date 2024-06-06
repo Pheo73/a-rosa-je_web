@@ -4,24 +4,76 @@ import { faUser, faBell } from "@fortawesome/free-regular-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import useStore from "../store/Store";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 function Profil() {
   const store = useStore();
   const navigate = useNavigate();
+  const { token, user, getUser } = useStore();
+  const [formData, setFormData] = useState({
+    username: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: ""
+  });
+
+  useEffect(() => {
+    getUser();
+  }, [token, getUser]);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username || "",
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        email: user.email || "",
+        password: ""
+      });
+    }
+  }, [user]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(
+        "/api/user/update/",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
+      if (response.status === 200) {
+        alert("Informations mises à jour avec succès !");
+        getUser(); // Rafraîchir les informations utilisateur
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des informations :", error);
+      alert("Erreur lors de la mise à jour des informations.");
+    }
+  };
+
   const handleLogout = () => {
     store.logout();
     navigate("/login");
   };
-  const { token,user,getUser } = useStore();
 
-  useEffect(() => {
-    getUser();
-  }, [token]);
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
       <header className="flex py-4">
         <div className="mt-2">
-          <button className="text-black text-[20px] font-[rubik-mono]  ml-16">
+          <button className="text-black text-[20px] font-[rubik-mono] ml-16">
             <Link to="/home">Home</Link>
           </button>
         </div>
@@ -31,7 +83,7 @@ function Profil() {
               icon={faBell}
               color="white"
               size="1x"
-              className="bg-[#464C44] p-2  rounded-full mr-3"
+              className="bg-[#464C44] p-2 rounded-full mr-3"
             />
             <FontAwesomeIcon
               icon={faUser}
@@ -43,7 +95,7 @@ function Profil() {
         </div>
       </header>
       <div className="bg-[#000000] h-56 pt-3">
-        <h1 className="relative text-white text-[40px] font-[rubik-mono]  ml-16">
+        <h1 className="relative text-white text-[40px] font-[rubik-mono] ml-16">
           {user ? (
             <span>
               {user.first_name} {user.last_name}
@@ -60,59 +112,67 @@ function Profil() {
         <h1 className=" text-black text-[15px] font-[rubik-mono]">
           Vos informations
         </h1>
-        {user && (
-          <>
-            <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-              Nom d'utilisateur*
-            </p>
-            <input
-              className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-              placeholder="Username"
-              type="email"
-              value={user.username}
-            />
-            <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Prénom*</p>
-            <input
-              className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-              placeholder="John"
-              type="text"
-              value={user.first_name}
-            />
-            <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Nom*</p>
-            <input
-              className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-              placeholder="Smoth"
-              type="text"
-              value={user.last_name}
-            />
-            <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Email*</p>
-            <input
-              className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-              placeholder="email@adress.com"
-              type="text"
-              value={user.email}
-            />
-            <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">
-              Téléphone
-            </p>
-            <input
-              className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
-              placeholder="+33 X XX XX XX XX"
-              type="tel"
-            />
-          </>
-        )}
-        <div className="flex mx-auto justify-center">
-          <button className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block">
-            SAUVEGARDER
-          </button>
-          <button
-            onClick={handleLogout}
-            className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block"
-          >
-            DÉCONNECTION
-          </button>
-        </div>
+        <form onSubmit={handleFormSubmit}>
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Nom d'utilisateur*</p>
+          <input
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+            placeholder="Username"
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleInputChange}
+          />
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Prénom*</p>
+          <input
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+            placeholder="John"
+            type="text"
+            name="first_name"
+            value={formData.first_name}
+            onChange={handleInputChange}
+          />
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Nom*</p>
+          <input
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+            placeholder="Smith"
+            type="text"
+            name="last_name"
+            value={formData.last_name}
+            onChange={handleInputChange}
+          />
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Email*</p>
+          <input
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+            placeholder="email@address.com"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+          />
+          <p className="font-[poppins-medium] text-[#3E9B2A] mt-3">Mot de passe</p>
+          <input
+            className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2"
+            placeholder="Nouveau mot de passe"
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+          />
+          <div className="flex mx-auto justify-center">
+            <button
+              type="submit"
+              className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block"
+            >
+              SAUVEGARDER
+            </button>
+            <button
+              onClick={handleLogout}
+              className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#3E9B2A] px-5 rounded-[10px] mx-auto mt-8 block"
+            >
+              DÉCONNECTION
+            </button>
+          </div>
+        </form>
         <button className="text-white text-[10px] font-[rubik-mono] w-64 h-7 bg-[#E94C3C] px-5 rounded-[10px] mx-auto mt-8 block">
           SUPPRIMER VOTRE COMPTE
         </button>

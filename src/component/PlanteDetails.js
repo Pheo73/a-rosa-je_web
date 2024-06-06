@@ -39,7 +39,7 @@ function PlanteDetails() {
     end_date: "",
     address: "",
     postal_code: "",
-    price: "",
+    formatted_price: "",
     city: "", 
   });
 
@@ -193,7 +193,7 @@ function PlanteDetails() {
 
           <div className="h-fit">
             <img
-              src="./cactus.png"
+              src={plante?.image_url}
               className="max-h-52 ml-40"
               alt="cactus"
             ></img>
@@ -238,9 +238,9 @@ function PlanteDetails() {
             className="border border-black rounded-3xl pl-3 bg-[#D9D9D9] w-48 mt-2 mb-6"
             placeholder="20€"
             type="number"
-            value={formData.price}
+            value={formData.formatted_price}
             onChange={(e) => {
-              setFormData({ ...formData, price: e.target.value });
+              setFormData({ ...formData, formatted_price: e.target.value });
             }}
           ></input>
 

@@ -201,7 +201,7 @@ function Home() {
                     </div>
                     <div className="h-fit">
                       <img
-                        src="./cactus.png"
+                        src={plant.image_url}
                         className="max-h-52 ml-12"
                         alt={plant.species}
                       />

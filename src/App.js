@@ -14,6 +14,8 @@ import Login from "./component/Login";
 import Register from "./component/Register";
 import useStore from "./store/Store";
 import Map from "./component/Map";
+import OfferDetails from "./component/OfferDetails";
+import Cgu from "./component/Cgu";
 
 function App() {
   const store = useStore();
@@ -26,11 +28,12 @@ function App() {
   );
 }
 
-function AppRoutes({ isLoggedIn }) {
+function AppRoutes({ isLoggedIn }) {  
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoggedIn && window.location.pathname !== "/register") {
+    const currentPath = window.location.pathname;
+    if (!isLoggedIn && currentPath !== "/register" && !currentPath.startsWith("/cgu")) {
       navigate("/login");
     }
   }, [isLoggedIn, navigate]);
@@ -45,7 +48,9 @@ function AppRoutes({ isLoggedIn }) {
       <Route path="/plantoffers" element={<PlantOffers />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/cgu" element={<Cgu />} />
       <Route path="/offersMap" element={<Map />} />
+      <Route path="/offerDetails" element={<OfferDetails />} />
     </Routes>
   );
 }
