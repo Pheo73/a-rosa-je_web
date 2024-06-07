@@ -1,7 +1,7 @@
 const planteService = {
   async sunExpo(token) {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/sun-exposures/", {
+      const response = await fetch("http://172.16.1.43:8000/api/sun-exposures/", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -22,7 +22,7 @@ const planteService = {
 
   async temperatureRanges(token) {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/temperature-ranges/", {
+      const response = await fetch("http://172.16.1.43:8000/api/temperature-ranges/", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -43,7 +43,7 @@ const planteService = {
 
   async waterAmount(token) {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/watering-amounts/", {
+      const response = await fetch("http://172.16.1.43:8000/api/watering-amounts/", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ const planteService = {
  async getOffers(token) {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/guardian-requests/",
+        "http://172.16.1.43:8000/api/guardian-requests/",
         {
           method: "GET",
           headers: {

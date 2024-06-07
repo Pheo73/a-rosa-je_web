@@ -70,7 +70,7 @@ function AddPlant() {
 
   const addPlant = async (formData, token) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/plants/", {
+      const response = await fetch("http://172.16.1.43:8000/api/plants/", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
@@ -96,7 +96,7 @@ function AddPlant() {
       formData.append("plant", plantId);
       formData.append("image", imageFile);
 
-      const response = await fetch("http://127.0.0.1:8000/api/plant-images/", {
+      const response = await fetch("http://172.16.1.43:8000/api/plant-images/", {
         method: "POST",
         body: formData,
         headers: {

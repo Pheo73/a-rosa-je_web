@@ -5,7 +5,7 @@ const authService = {
       formData.append("username", username);
       formData.append("password", password);
 
-      const response = await fetch("http://127.0.0.1:8000/api/token/", {
+      const response = await fetch("http://172.16.1.43:8000/api/token/", {
         method: "POST",
         body: formData,
       });
@@ -23,7 +23,7 @@ const authService = {
   },
   async register(formData) {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/register/", {
+      const response = await fetch("http://172.16.1.43:8000/api/register/", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
@@ -43,7 +43,7 @@ const authService = {
   },
   async addPlant(formData) {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/plants/", {
+      const response = await fetch("http://172.16.1.43:8000/api/plants/", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
@@ -63,7 +63,7 @@ const authService = {
   },
   async displayUser(token) {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/user/", {
+      const response = await fetch("http://172.16.1.43:8000/api/user/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
