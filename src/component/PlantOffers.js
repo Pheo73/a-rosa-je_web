@@ -6,13 +6,12 @@ import useStore from "../store/Store";
 import React, { useEffect } from "react";
 
 function PlantOffers() {
-  const { token,user,getUser,getOffer,offers } = useStore();
+  const { token, user, getUser, getOffer, offers } = useStore();
 
   useEffect(() => {
     getOffer();
     getUser();
   }, [token]);
-
   return (
     <div className="flex flex-col min-h-screen">
       <div className="bg-[#D9D9D9] flex-grow ">
@@ -56,50 +55,67 @@ function PlantOffers() {
           <p className="text-black text-[15px] font-[rubik-mono]">
             Selectionner la plante que vous souhaitez garder
           </p>
-          <Link to={`/offersMap`} className="font-[poppins-regular] text-[#9E9E9E] text-[13px] mt-5">
+          <Link
+            to={`/offersMap`}
+            className="font-[poppins-regular] text-[#9E9E9E] text-[13px] mt-5"
+          >
             Afficher la map
           </Link>
-          {offers && offers.filter((offer)=>offer.username !== user.username)?.map((offer) => (
-            <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2 ">
-              <p className="text-black text-[15px] font-[rubik-mono]">
-                {offer.first_name} {offer.last_name}
-              </p>
-              <div className="flex">
-                <div>
-                  <FontAwesomeIcon
-                    icon={faUser}
-                    size="2xl"
-                    className="mt-8"
-                    color="green"
-                  />
-                </div>
-                <div className="ml-6 mt-4">
-                  <div className="flex mb-2 items-center">
-                    <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
-                      Date
-                    </p>
-                    <p className="align-middle mt-0 mb-0">
-                      {offer.formatted_dates}
-                    </p>
-                  </div>
-                  <div className="flex mb-2 items-center">
-                    <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
-                      Ville
-                    </p>
-                    <p className="align-middle mt-0 mb-0">{offer.city_name}</p>
-                  </div>
+          {offers &&
+            offers.filter((offer)=>offer.username !== user.username)?.map((offer) => (
+                <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2 " key={offer.request_id}>
+                  <p className="text-black text-[15px] font-[rubik-mono]">
+                    {offer.first_name} {offer.last_name}
+                  </p>
                   <div className="flex">
-                    <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
-                      Prix
-                    </p>
-                    <p className="align-middle mt-0 mb-0">{offer.formatted_price}</p>
+                    <div>
+                      <FontAwesomeIcon
+                        icon={faUser}
+                        size="2xl"
+                        className="mt-8"
+                        color="green"
+                      />
+                    </div>
+                    <div className="ml-6 mt-4">
+                      <div className="flex mb-2 items-center">
+                        <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
+                          Date
+                        </p>
+                        <p className="align-middle mt-0 mb-0">
+                          {offer.formatted_dates}
+                        </p>
+                      </div>
+                      <div className="flex mb-2 items-center">
+                        <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
+                          Ville
+                        </p>
+                        <p className="align-middle mt-0 mb-0">
+                          {offer.city_name}
+                        </p>
+                      </div>
+                      <div className="flex">
+                        <p className="text-black text-[13px] font-[rubik-mono] mr-6 align-middle mt-0 mb-0">
+                          Prix
+                        </p>
+                        <p className="align-middle mt-0 mb-0">
+                          {offer.formatted_price}
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      to={`/plantedetails/${offer.plant}?requestId=${offer.request_id}`}
+                      className="block w-fit"
+                      key={offer}
+                    >
+                      <button className="text-white text-[12px] font-[rubik-mono] w-52 h-10 bg-[#3E9B2A] px-5 rounded-[10px] ml-28 mt-8">
+                        Détails de la plante
+                      </button>
+                    </Link>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              ))}
         </div>
-      <footer className="w-full bg-black h-11 flex items-center justify-center text-white mt-8"></footer>
+        <footer className="w-full bg-black h-11 flex items-center justify-center text-white mt-8"></footer>
       </div>
     </div>
   );
