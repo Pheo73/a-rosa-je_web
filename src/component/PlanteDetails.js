@@ -363,7 +363,7 @@ function PlanteDetails() {
                     offer.username === user.username
                 )
                 ?.map((offer) => (
-                  <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2">
+                  <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2" key={offer.request_id}>
                     <p className="text-black text-[15px] font-[rubik-mono]">
                       {offer.first_name} {offer.last_name}
                     </p>
