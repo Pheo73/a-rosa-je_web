@@ -1,105 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { Link} from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faUser, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import useStore from "../store/Store";
+import Lottie from 'react-lottie';
+import openChatAnimation from '../lottie/Animation - 1726684938322.json';
+import NotificationSidebar from './shared/NotificationSidebar';
 
 export default function Chat() {
-  const { token, user } = useStore();
+  const { token, user, getUser } = useStore();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [conversations, setConversations] = useState([]);
-  const [activeConversation, setActiveConversation] = useState();
-console.log(conversations);
+  const [activeConversation, setActiveConversation] = useState(null);
+  const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const { username } = useParams();  // Get the username from the URL
 
-  const getConversation = async (token) => {
+  const getMessages = useCallback(async (conversationId) => {
     try {
-      const response = await fetch(`http://172.16.1.126:8000/api/conversations/`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/conversations/${conversationId}/messages/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-
       });
 
       if (!response.ok) {
-        throw new Error("Error fetching conversation:");
+        throw new Error("Erreur lors de la récupération des messages.");
       }
-      setConversations(await response.json())
-    } catch (error) {
-      console.error("Error fetching conversation:", error);
-      throw error;
-    }
-  };
 
-  useEffect(() => {
-    getConversation(token)
+      const data = await response.json();
+      setMessages(data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des messages :", error);
+    }
   }, [token]);
 
-  const handleSendMessage = async () => {
+  const getNotifications = useCallback(async () => {
     try {
-      const response = await fetch(`http://172.16.1.126:8000/api/conversations/${conversations.find(conv => conv.participants[0].username === activeConversation.username).id}/messages/`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/notifications/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des notifications.");
+      }
+
+      const data = await response.json();
+      setNotifications(data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des notifications :", error);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const getConversation = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/conversations/`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des conversations.");
+        }
+        const data = await response.json();
+        setConversations(data);
+
+        // Set active conversation based on URL parameter
+        if (username) {
+          const conversation = data.find(conv => 
+            conv.participants.some(participant => participant.username === username)
+          );
+          if (conversation) {
+            setActiveConversation(conversation.participants.find(p => p.username === username));
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des conversations :", error);
+      }
+    };
+
+    if (token) {
+      getConversation();
+      getNotifications();
+    }
+  }, [token, getNotifications, username]);
+
+  useEffect(() => {
+    let intervalId;
+
+    if (activeConversation) {
+      const conversation = conversations.find(conv =>
+        conv.participants.some(participant => participant.username === activeConversation.username)
+      );
+      if (conversation) {
+        getMessages(conversation.id);
+        
+        intervalId = setInterval(() => {
+          getMessages(conversation.id);
+        }, 5000);
+      }
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [activeConversation, conversations, getMessages]);
+
+  const handleSendMessage = async () => {
+    if (!activeConversation) return;
+
+    try {
+      const conversation = conversations.find(conv =>
+        conv.participants.some(participant => participant.username === activeConversation.username)
+      );
+
+      if (!conversation) {
+        throw new Error("Conversation non trouvée.");
+      }
+
+      const response = await fetch(`http://127.0.0.1:8000/api/conversations/${conversation.id}/messages/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body:JSON.stringify(({ content: newMessage }))
+        body: JSON.stringify({ content: newMessage })
       });
 
       if (!response.ok) {
-        throw new Error("Error fetching conversation:");
+        throw new Error("Erreur lors de l'envoi du message.");
       }
-      getMessage();
+
       setNewMessage('');
+      getMessages(conversation.id);
     } catch (error) {
-      console.error("Error fetching conversation:", error);
-      throw error;
+      console.error("Erreur lors de l'envoi du message :", error);
     }
   };
-  
-  const getMessage = async () => {
-    try {
-      const response = await fetch(`http://172.16.1.126:8000/api/conversations/${conversations.find(conv => conv.participants[0].username === activeConversation.username).id}/messages/`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
 
-      });
-
-      if (!response.ok) {
-        throw new Error("Error fetching conversation:");
-      }
-    } catch (error) {
-      console.error("Error fetching conversation:", error);
-      throw error;
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: openChatAnimation,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice'
     }
-    try {
-      const response = await fetch(`http://172.16.1.126:8000/api/conversations/${conversations.find(conv => conv.participants[0].username === activeConversation.username).id}/messages/`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Error fetching conversation:");
-      }
-      setMessages(await response.json())
-    } catch (error) {
-      console.error("Error fetching conversation:", error);
-      throw error;
-    }
-  }
+  };
 
   useEffect(() => {
-    if (activeConversation !== undefined) {
-      getMessage()
-    }
-  }, [activeConversation])
+    getUser();
+  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-[#F5F5F5]">
@@ -115,7 +178,8 @@ console.log(conversations);
               icon={faBell}
               color="white"
               size="1x"
-              className="bg-[#464C44] p-2 rounded-full mr-3"
+              className="bg-[#464C44] p-2 rounded-full mr-3 cursor-pointer"
+              onClick={() => setIsNotificationSidebarOpen(true)}
             />
             <Link to="/profil">
               <FontAwesomeIcon
@@ -134,62 +198,75 @@ console.log(conversations);
           <h2 className="text-xl font-semibold p-4 border-b">Conversations</h2>
           {conversations.map((conv) => (
             <div
-              key={conv.participants[0].username}
-              className={`p-4 cursor-pointer hover:bg-gray-100 ${activeConversation === conv.participants[0] ? 'bg-gray-200' : ''
+              key={conv.id}
+              className={`p-4 cursor-pointer hover:bg-gray-100 ${activeConversation?.username === conv.participants.find(e => e.username !== user.username).username ? 'bg-gray-200' : ''
                 }`}
-              onClick={() => setActiveConversation(conv.participants[0])}
+              onClick={() => setActiveConversation(conv.participants.find(e => e.username !== user.username))}
             >
-              <p className="font-medium">{conv.participants[0].username}</p>
-              {/* <p className="text-sm text-gray-600">{conv.participants[0].username.plantName}</p> */}
+              <p className="font-medium">{conv.participants.find((e) => e.username !== user.username).username}</p>
             </div>
           ))}
         </aside>
 
-        <main className="flex-1 flex flex-col bg-white rounded-lg shadow-md">
-          <div className="p-4 border-b">
-            <h1 className="text-2xl font-bold">Discutez avec {activeConversation ? activeConversation.username : 'les autres utilisateurs'}</h1>
-            {/* <p className="text-gray-600">Nom de la plante : {plantName}</p> */}
-          </div>
+        {activeConversation ? (
+          <main className="flex-1 flex flex-col bg-white rounded-lg shadow-md">
+            <div className="p-4 border-b">
+              <h1 className="text-2xl font-bold">Discutez avec {activeConversation.username}</h1>
+            </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`mb-4 ${message.sender === user.username ? 'text-right' : 'text-left'
-                  }`}
-              >
+            <div className="flex-1 overflow-y-auto p-4 scrollbar-custom">
+              {messages.map((message, index) => (
                 <div
-                  className={`inline-block p-2 rounded-lg ${message.sender === user.username
-                    ? 'bg-[#464C44] text-white'
-                    : 'bg-gray-200 text-black'
+                  key={index}
+                  className={`mb-4 ${message.sender_username === user.username ? 'text-right' : 'text-left'
                     }`}
                 >
-                  {message.content}
+                  <div
+                    className={`inline-block p-2 rounded-lg ${message.sender_username === user.username
+                      ? 'bg-[#3E9B2A] text-white'
+                      : ' bg-gray-200 text-black'
+                      }`}
+                  >
+                    {message.content}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div className="p-4 border-t flex">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              className="flex-grow border rounded-l-lg px-2 py-1"
-              placeholder="Type your message..."
-              disabled={activeConversation === undefined}
+            <div className="p-4 border-t flex">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                className="flex-grow border rounded-l-lg px-2 py-1"
+                placeholder="Type your message..."
+                disabled={!activeConversation}
+              />
+              <button
+                onClick={handleSendMessage}
+                className={`bg-[#464C44] text-white px-4 py-2 rounded-r-lg ${!activeConversation ? '' : 'hover:bg-[#3E9B2A]'}`}
+                disabled={!activeConversation}
+              >
+                <FontAwesomeIcon icon={faPaperPlane} />
+              </button>
+            </div>
+          </main>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <Lottie
+              options={defaultOptions}
+              height={500}
+              width={700}
             />
-            <button
-              onClick={handleSendMessage}
-              className={`bg-[#464C44] text-white px-4 py-2 rounded-r-lg ${activeConversation === undefined ? '' : 'hover:bg-[#3E9B2A]'}`}
-              disabled={activeConversation === undefined}
-
-            >
-              <FontAwesomeIcon icon={faPaperPlane} />
-            </button>
           </div>
-        </main>
+        )}
       </div>
+
+      <NotificationSidebar
+        isOpen={isNotificationSidebarOpen}
+        onClose={() => setIsNotificationSidebarOpen(false)}
+        notifications={notifications}
+      />
     </div>
   );
 }

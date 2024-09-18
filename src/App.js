@@ -14,7 +14,6 @@ import Login from "./component/Login";
 import Register from "./component/Register";
 import useStore from "./store/Store";
 import Map from "./component/Map";
-import OfferDetails from "./component/OfferDetails";
 import Cgu from "./component/Cgu";
 import Chat from "./component/Chat";
 
@@ -51,7 +50,6 @@ function AppRoutes({ isLoggedIn }) {
       <Route path="/register" element={<Register />} />
       <Route path="/cgu" element={<Cgu />} />
       <Route path="/offersMap" element={<Map />} />
-      <Route path="/offerDetails" element={<OfferDetails />} />
       <Route path="/chat/:username" element={<Chat />} />
     </Routes>
   );

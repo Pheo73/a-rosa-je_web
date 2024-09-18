@@ -10,19 +10,22 @@ import {
 import { Link } from "react-router-dom";
 import useStore from "../store/Store";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import NotificationSidebar from './shared/NotificationSidebar';
 
 function Home() {
-  const { token, sun, temp, water,getSelectValue } = useStore();
+  const { token, sun, temp, water, getSelectValue } = useStore();
   const [userPlant, setUserPlant] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlant, setSelectedPlant] = useState(null);
+  const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const displayPlant = async () => {
     try {
       if (!token) {
         return;
       }
 
-      const response = await fetch(`http://172.16.1.126:8000/api/plants/`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/plants/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -75,7 +78,7 @@ function Home() {
     if (!selectedPlant) return;
 
     try {
-      const response = await fetch(`http://172.16.1.126:8000/api/plants/${selectedPlant.plantId}/`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/plants/${selectedPlant.plantId}/`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -115,6 +118,7 @@ function Home() {
               color="white"
               size="2x"
               className="bg-[#464C44] p-2  rounded-full mr-3"
+              onClick={() => setIsNotificationSidebarOpen(true)}
             />
             <Link to="/profil">
               <FontAwesomeIcon
@@ -227,12 +231,16 @@ function Home() {
       )}
       <img
         src="./accueil_plante.png"
-        className={`${
-          userPlant === null || userPlant.length === 0
+        className={`${userPlant === null || userPlant.length === 0
             ? "ml-auto right-0 mt-[-20rem]"
             : "absolute z-50 ml-auto right-0 mt-[-32rem]"
-        }`}
+          }`}
         alt="accueil"
+      />
+      <NotificationSidebar
+        isOpen={isNotificationSidebarOpen}
+        onClose={() => setIsNotificationSidebarOpen(false)}
+        notifications={notifications}
       />
     </div>
   );
