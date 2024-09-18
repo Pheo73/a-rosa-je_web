@@ -9,6 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import useStore from "../store/Store";
 import { useLocation } from "react-router-dom";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 function PlanteDetails() {
   const { plantId } = useParams();
@@ -147,6 +148,25 @@ function PlanteDetails() {
     getUser();
     getSelectValue();
   }, [token]);
+
+  const handleDeleteClick = async (requestId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/guardian-request/${requestId}/`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Delete plant offers failed");
+      }
+    } catch (error) {
+      console.error("Error adding plant:", error);
+      throw error;
+    }
+  };
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
       <header className="flex py-4">
@@ -363,10 +383,12 @@ function PlanteDetails() {
                     offer.username === user.username
                 )
                 ?.map((offer) => (
-                  <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2" key={offer.request_id}>
-                    <p className="text-black text-[15px] font-[rubik-mono]">
+                  <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2 parent-div" key={offer.request_id} >
+                   <div className="flex w-full justify-between"> <p className="text-black text-[15px] font-[rubik-mono]">
                       {offer.first_name} {offer.last_name}
                     </p>
+                    <FontAwesomeIcon icon={faTrashCan} className="trash-icon ml-48 hover:text-red-500" onClick={(e) => { e.preventDefault(); handleDeleteClick(offer.request_id); }} /></div>
+                   
                     <div className="flex">
                       <div>
                         <FontAwesomeIcon
