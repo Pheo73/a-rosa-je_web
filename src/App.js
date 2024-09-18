@@ -16,6 +16,7 @@ import useStore from "./store/Store";
 import Map from "./component/Map";
 import OfferDetails from "./component/OfferDetails";
 import Cgu from "./component/Cgu";
+import Chat from "./component/Chat";
 
 function App() {
   const store = useStore();
@@ -51,6 +52,7 @@ function AppRoutes({ isLoggedIn }) {
       <Route path="/cgu" element={<Cgu />} />
       <Route path="/offersMap" element={<Map />} />
       <Route path="/offerDetails" element={<OfferDetails />} />
+      <Route path="/chat/:username" element={<Chat />} />
     </Routes>
   );
 }

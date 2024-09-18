@@ -8,8 +8,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from "react";
 import useStore from "../store/Store";
-import { useLocation } from "react-router-dom";
+import {   useLocation, useNavigate } from "react-router-dom";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { logDOM } from "@testing-library/react";
 
 function PlanteDetails() {
   const { plantId } = useParams();
@@ -35,6 +36,7 @@ function PlanteDetails() {
   const offerDetail = offers.find(
     (offer) => offer.request_id === Number(requestId)
   );
+  const navigate = useNavigate();
   const getCities = async (token) => {
     try {
       const response = await fetch("http://127.0.0.1:8000/api/cities/", {
@@ -167,6 +169,18 @@ function PlanteDetails() {
       throw error;
     }
   };
+
+  const handleContactOwner = () => {
+    navigate(`/chat/${offerDetail.username}`, { 
+      state: { 
+        offerId: offerDetail.request_id,
+        plantName: plante.name
+      }
+    });
+  };
+  console.log(offerDetail);
+  
+
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
       <header className="flex py-4">
@@ -384,7 +398,7 @@ function PlanteDetails() {
                 )
                 ?.map((offer) => (
                   <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2 parent-div" key={offer.request_id} >
-                   <div className="flex w-full justify-between"> <p className="text-black text-[15px] font-[rubik-mono]">
+                   <div className="flex w-full justify-between  "> <p className="text-black text-[15px] font-[rubik-mono]">
                       {offer.first_name} {offer.last_name}
                     </p>
                     <FontAwesomeIcon icon={faTrashCan} className="trash-icon ml-48 hover:text-red-500" onClick={(e) => { e.preventDefault(); handleDeleteClick(offer.request_id); }} /></div>
@@ -492,11 +506,12 @@ function PlanteDetails() {
           </div>
         </div>
         <div className="h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 flex justify-center">
-        <Link to={`/`} className="block" key={1}>
-          <button className="text-white text-[12px] font-[rubik-mono] w-52 h-10 bg-[#3E9B2A] px-5 rounded-[10px] mt-8 mx-auto">
-            Contacter le propriétaire
-          </button>
-        </Link>
+        <button 
+              onClick={handleContactOwner}
+              className="text-white text-[12px] font-[rubik-mono] w-52 h-10 bg-[#3E9B2A] px-5 rounded-[10px] mt-8 mx-auto"
+            >
+              Contacter le propriétaire
+            </button>
       </div>
       </>
       )}
