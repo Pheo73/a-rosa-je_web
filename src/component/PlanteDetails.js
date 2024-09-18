@@ -8,9 +8,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from "react";
 import useStore from "../store/Store";
-import {   useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
-import { logDOM } from "@testing-library/react";
 
 function PlanteDetails() {
   const { plantId } = useParams();
@@ -27,19 +26,46 @@ function PlanteDetails() {
   } = useStore();
   const [userPlant, setUserPlant] = useState(null);
   const [cities, setCities] = useState(null);
-  const plante =
-    userPlant &&
-    userPlant.find((plant) => parseInt(plant.plantId) === parseInt(plantId));
+
+
   let location = useLocation();
   const query = new URLSearchParams(location.search);
   const requestId = query.get("requestId");
+
+  const getPlantDetailsFromRequest = async (requestId) => {
+    const response = await fetch(
+      `http://172.16.1.126:8000/api/guardian-requests-details/${requestId}/`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setPlante(data);
+    }
+  }
+
+  const [plante, setPlante] = useState();
+
+
+  useEffect(() => {
+    if (requestId) {
+      getPlantDetailsFromRequest(requestId)
+    } else if (userPlant) { setPlante(userPlant.find((plant) => parseInt(plant.plantId) === parseInt(plantId))) } else { return }
+  }, [userPlant, requestId])
+
   const offerDetail = offers.find(
     (offer) => offer.request_id === Number(requestId)
   );
   const navigate = useNavigate();
   const getCities = async (token) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/cities/", {
+      const response = await fetch(`http://172.16.1.126:8000/api/cities/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +96,7 @@ function PlanteDetails() {
 
   const displayPlant = async (token) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/plants/", {
+      const response = await fetch(`http://172.16.1.126:8000/api/plants/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +139,7 @@ function PlanteDetails() {
   const addGuard = async (formData, token) => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/guardian-requests/",
+        `http://172.16.1.126:8000/api/guardian-requests/`,
         {
           method: "POST",
           body: JSON.stringify(formData),
@@ -153,7 +179,7 @@ function PlanteDetails() {
 
   const handleDeleteClick = async (requestId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/guardian-request/${requestId}/`, {
+      const response = await fetch(`http://172.16.1.126:8000/api/guardian-request/${requestId}/`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -165,21 +191,37 @@ function PlanteDetails() {
         throw new Error("Delete plant offers failed");
       }
     } catch (error) {
-      console.error("Error adding plant:", error);
+      console.error("Error fetching guardian request:", error);
       throw error;
     }
   };
 
-  const handleContactOwner = () => {
-    navigate(`/chat/${offerDetail.username}`, { 
-      state: { 
-        offerId: offerDetail.request_id,
-        plantName: plante.name
+  const handleContactOwner = async () => {
+    if (plante.user_id) {
+      try {
+        const response = await fetch(`http://172.16.1.126:8000/api/conversations/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ other_participant: plante.user_id }),
+        });
+
+        if (response.ok) {
+          navigate(`/chat/${offerDetail.username}`, {
+            state: {
+              offerId: offerDetail.request_id,
+              plantName: plante.name
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error creating conversation:", error);
+        throw error;
       }
-    });
+    }
   };
-  console.log(offerDetail);
-  
 
   return (
     <div className="bg-[#D9D9D9] min-h-screen w-full">
@@ -235,7 +277,7 @@ function PlanteDetails() {
       <div className="bg-[#FFFFFF] h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 mb-8">
         {plante && (
           <p className="text-black text-[14px] font-[rubik-mono]">
-            {plante.name}
+            {plante.name || plante.plant_name}
           </p>
         )}
         <p className="font-[poppins-regular] text-[#9E9E9E] text-[13px]">
@@ -398,11 +440,11 @@ function PlanteDetails() {
                 )
                 ?.map((offer) => (
                   <div className="border border-[#9E9E9E] rounded-3xl w-full mt-5 px-6 pb-6 pt-2 parent-div" key={offer.request_id} >
-                   <div className="flex w-full justify-between  "> <p className="text-black text-[15px] font-[rubik-mono]">
+                    <div className="flex w-full justify-between  "> <p className="text-black text-[15px] font-[rubik-mono]">
                       {offer.first_name} {offer.last_name}
                     </p>
-                    <FontAwesomeIcon icon={faTrashCan} className="trash-icon ml-48 hover:text-red-500" onClick={(e) => { e.preventDefault(); handleDeleteClick(offer.request_id); }} /></div>
-                   
+                      <FontAwesomeIcon icon={faTrashCan} className="trash-icon ml-48 hover:text-red-500" onClick={(e) => { e.preventDefault(); handleDeleteClick(offer.request_id); }} /></div>
+
                     <div className="flex">
                       <div>
                         <FontAwesomeIcon
@@ -481,7 +523,7 @@ function PlanteDetails() {
         </>
       ) : (<>
         <div className="bg-[#FFFFFF] h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 mb-8">
-        <p className="text-black text-[14px] font-[rubik-mono]">
+          <p className="text-black text-[14px] font-[rubik-mono]">
             Details de l'offre
           </p>
           <div className="ml-6 mt-4">
@@ -506,13 +548,13 @@ function PlanteDetails() {
           </div>
         </div>
         <div className="h-auto w-1/2 rounded-3xl mx-auto mt-[-20px] py-5 px-8 flex justify-center">
-        <button 
-              onClick={handleContactOwner}
-              className="text-white text-[12px] font-[rubik-mono] w-52 h-10 bg-[#3E9B2A] px-5 rounded-[10px] mt-8 mx-auto"
-            >
-              Contacter le propriétaire
-            </button>
-      </div>
+          <button
+            onClick={handleContactOwner}
+            className="text-white text-[12px] font-[rubik-mono] w-52 h-10 bg-[#3E9B2A] px-5 rounded-[10px] mt-8 mx-auto"
+          >
+            Contacter le propriétaire
+          </button>
+        </div>
       </>
       )}
 
