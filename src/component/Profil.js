@@ -49,7 +49,7 @@ function Profil() {
   const handleConfirmUpdate = async () => {
     try {
       const response = await axios.put(
-        `http://127.0.0.1:8000/api/user/update/`,
+        `http://172.16.1.126:8000/api/user/update/`,
         { ...formData, password },
         {
           headers: {
@@ -84,12 +84,6 @@ function Profil() {
         </div>
         <div className="ml-auto mr-16">
           <div className="flex">
-            <FontAwesomeIcon
-              icon={faBell}
-              color="white"
-              size="1x"
-              className="bg-[#464C44] p-2 rounded-full mr-3"
-            />
             <FontAwesomeIcon
               icon={faUser}
               size="1x"

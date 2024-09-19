@@ -12,7 +12,7 @@ function NotificationSidebar({ isOpen, onClose }) {
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/notifications/', {
+                const response = await fetch('http://172.16.1.126:8000/api/notifications/', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ function NotificationSidebar({ isOpen, onClose }) {
     };
     const redirectChat = async (notification) => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/notifications/mark-all-read/', {
+            const response = await fetch('http://172.16.1.126:8000/api/notifications/mark-all-read/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -34,7 +34,7 @@ function PlanteDetails() {
 
   const getPlantDetailsFromRequest = async (requestId) => {
     const response = await fetch(
-      `http://127.0.0.1:8000/api/guardian-requests-details/${requestId}/`,
+      `http://172.16.1.126:8000/api/guardian-requests-details/${requestId}/`,
       {
         method: "GET",
         headers: {
@@ -65,7 +65,7 @@ function PlanteDetails() {
   const navigate = useNavigate();
   const getCities = async (token) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/cities/`, {
+      const response = await fetch(`http://172.16.1.126:8000/api/cities/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -96,7 +96,7 @@ function PlanteDetails() {
 
   const displayPlant = async (token) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/plants/`, {
+      const response = await fetch(`http://172.16.1.126:8000/api/plants/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -139,7 +139,7 @@ function PlanteDetails() {
   const addGuard = async (formData, token) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/guardian-requests/`,
+        `http://172.16.1.126:8000/api/guardian-requests/`,
         {
           method: "POST",
           body: JSON.stringify(formData),
@@ -179,7 +179,7 @@ function PlanteDetails() {
 
   const handleDeleteClick = async (requestId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/guardian-request/${requestId}/`, {
+      const response = await fetch(`http://172.16.1.126:8000/api/guardian-request/${requestId}/`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -199,17 +199,17 @@ function PlanteDetails() {
   const handleContactOwner = async () => {
     if (plante.user_id) {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/conversations/`, {
+        const response = await fetch(`http://172.16.1.126:8000/api/conversations/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ other_participant: plante.user_id }),
+          body: JSON.stringify({ other_participant: plante.user_id,guardian_request: requestId}),
         });
 
         if (response.ok) {
-          navigate(`/chat/${offerDetail.username}`, {
+          navigate(`/chat?${offerDetail.username}`, {
             state: {
               offerId: offerDetail.request_id,
               plantName: plante.name

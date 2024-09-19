@@ -60,5 +60,5 @@
 }
 
 .parent-div:hover .trash-icon {
-  display: inline; /* ou 'block' si vous voulez que l'icône soit en ligne */
+  display: inline;
 }

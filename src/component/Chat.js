@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faUser, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faUser, faPaperPlane, faXmark } from '@fortawesome/free-solid-svg-icons';
 import useStore from "../store/Store";
 import Lottie from 'react-lottie';
 import openChatAnimation from '../lottie/Animation - 1726684938322.json';
@@ -15,18 +15,21 @@ export default function Chat() {
   const [activeConversation, setActiveConversation] = useState(null);
   const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const { username } = useParams();  // Get the username from the URL
+  const [chatInitiator, setChatInitiator] = useState([]);
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const username = queryParams.keys().next().value;
 
   const getMessages = useCallback(async (conversationId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/conversations/${conversationId}/messages/`, {
+      const response = await fetch(`http://172.16.1.126:8000/api/conversations/${conversationId}/messages/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
       if (!response.ok) {
         throw new Error("Erreur lors de la récupération des messages.");
       }
@@ -40,7 +43,7 @@ export default function Chat() {
 
   const getNotifications = useCallback(async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/notifications/`, {
+      const response = await fetch(`http://172.16.1.126:8000/api/notifications/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -59,57 +62,78 @@ export default function Chat() {
     }
   }, [token]);
 
-  useEffect(() => {
-    const getConversation = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/api/conversations/`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des conversations.");
-        }
-        const data = await response.json();
-        setConversations(data);
-
-        // Set active conversation based on URL parameter
-        if (username) {
-          const conversation = data.find(conv => 
-            conv.participants.some(participant => participant.username === username)
-          );
-          if (conversation) {
-            setActiveConversation(conversation.participants.find(p => p.username === username));
-          }
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des conversations :", error);
+  const getConversation = async () => {
+    try {
+      
+      const response = await fetch(`http://172.16.1.126:8000/api/conversations/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des conversations.");
       }
-    };
+     
+      const data = await response.json();
+      setConversations(data);
+      if (username) {
+        const conversation = data.find(conv =>
+          conv.participants.some(participant => participant.username === username)
+        );
+        if (conversation) {
+          setActiveConversation(conversation.participants.find(p => p.username === username));
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des conversations :", error);
+    }
+  };
 
+  useEffect(() => {
     if (token) {
       getConversation();
       getNotifications();
     }
   }, [token, getNotifications, username]);
 
+const getChatCreator = async (conversation) => {
+      if (activeConversation) {
+      
+      const responseCreator = await fetch(`http://172.16.1.126:8000/api/conversations/${conversation.id}/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!responseCreator.ok) {
+        throw new Error("Erreur lors de la récupération des conversations.");
+      }
+      const dataCreator = await responseCreator.json();
+      setChatInitiator(dataCreator)
+    
+    }
+}
+
+
   useEffect(() => {
+    
     let intervalId;
 
     if (activeConversation) {
-      const conversation = conversations.find(conv =>
-        conv.participants.some(participant => participant.username === activeConversation.username)
-      );
-      if (conversation) {
+    const conversation = conversations.find(conv =>
+      conv.participants.some(participant => participant.username === activeConversation.username)
+    );
+    getChatCreator(conversation);
+    if (conversation) {
+      getMessages(conversation.id);
+
+      intervalId = setInterval(() => {
         getMessages(conversation.id);
-        
-        intervalId = setInterval(() => {
-          getMessages(conversation.id);
-        }, 5000);
-      }
+      }, 5000);
+    }
     }
 
     return () => {
@@ -117,6 +141,7 @@ export default function Chat() {
         clearInterval(intervalId);
       }
     };
+    
   }, [activeConversation, conversations, getMessages]);
 
   const handleSendMessage = async () => {
@@ -131,7 +156,7 @@ export default function Chat() {
         throw new Error("Conversation non trouvée.");
       }
 
-      const response = await fetch(`http://127.0.0.1:8000/api/conversations/${conversation.id}/messages/`, {
+      const response = await fetch(`http://172.16.1.126:8000/api/conversations/${conversation.id}/messages/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -160,9 +185,21 @@ export default function Chat() {
     }
   };
 
+
   useEffect(() => {
     getUser();
-  }, []);
+  }, [getUser]);
+
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
     <div className="flex flex-col h-screen bg-[#F5F5F5]">
@@ -210,29 +247,33 @@ export default function Chat() {
 
         {activeConversation ? (
           <main className="flex-1 flex flex-col bg-white rounded-lg shadow-md">
-            <div className="p-4 border-b">
+            <div className="p-4 border-b flex">
               <h1 className="text-2xl font-bold">Discutez avec {activeConversation.username}</h1>
+              <FontAwesomeIcon icon={faXmark} className='hover:text-red-500 cursor-pointer my-auto ml-auto mr-0' onClick={() => { setActiveConversation(null) }} />
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 scrollbar-custom">
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`mb-4 ${message.sender_username === user.username ? 'text-right' : 'text-left'
-                    }`}
+                  className={`${message.sender_username === user.username ? 'text-right' : 'text-left'}`}
                 >
-                  <div
-                    className={`inline-block p-2 rounded-lg ${message.sender_username === user.username
-                      ? 'bg-[#3E9B2A] text-white'
-                      : ' bg-gray-200 text-black'
-                      }`}
-                  >
-                    {message.content}
+                  <div className="inline-block group">
+                    <div
+                      className={`p-2 rounded-lg ${message.sender_username === user.username
+                        ? 'bg-[#3E9B2A] text-white ml-auto'
+                        : 'bg-gray-200 text-black'
+                        } transition-opacity duration-200 w-fit`}
+                    >
+                      {message.content}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      {formatDate(message.timestamp)}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
-
             <div className="p-4 border-t flex">
               <input
                 type="text"

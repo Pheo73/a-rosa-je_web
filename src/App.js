@@ -50,7 +50,7 @@ function AppRoutes({ isLoggedIn }) {
       <Route path="/register" element={<Register />} />
       <Route path="/cgu" element={<Cgu />} />
       <Route path="/offersMap" element={<Map />} />
-      <Route path="/chat/:username" element={<Chat />} />
+      <Route path="/chat" element={<Chat />} />
     </Routes>
   );
 }
