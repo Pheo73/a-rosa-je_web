@@ -175,7 +175,7 @@ export default function Chat() {
     if (!activeConversation) return;
 
     try {
-      const response = await fetch(`http://172.16.1.126:8000/api/guardian-applications/${guardian_applications[0].id}/update-status/`, {
+      const response = await fetch(`http://172.16.1.126:8000/api/guardian-applications/${guardian_applications.id}/update-status/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
