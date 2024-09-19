@@ -3,10 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBell } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "react-router-dom";
 import useStore from "../store/Store";
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
+import NotificationSidebar from './shared/NotificationSidebar';
 
 function PlantOffers() {
   const { token, user, getUser, getOffer, offers } = useStore();
+  const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
 
   useEffect(() => {
     getOffer();
@@ -27,7 +29,9 @@ function PlantOffers() {
                 icon={faBell}
                 color="white"
                 size="1x"
-                className="bg-[#464C44] p-2 rounded-full mr-3"
+                className="bg-[#464C44] p-2 rounded-full mr-3 cursor-pointer"
+                onClick={() => setIsNotificationSidebarOpen(true)}
+
               />
               <Link to="/profil">
                 <FontAwesomeIcon
@@ -117,6 +121,11 @@ function PlantOffers() {
         </div>
         <footer className="w-full bg-black h-11 flex items-center justify-center text-white mt-8"></footer>
       </div>
+      <NotificationSidebar
+        isOpen={isNotificationSidebarOpen}
+        onClose={() => setIsNotificationSidebarOpen(false)}
+     
+      />
     </div>
   );
 }

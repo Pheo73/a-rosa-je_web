@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import useStore from "../store/Store";
 import { useLocation, useNavigate } from "react-router-dom";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import NotificationSidebar from './shared/NotificationSidebar';
 
 function PlanteDetails() {
   const { plantId } = useParams();
@@ -26,6 +27,7 @@ function PlanteDetails() {
   } = useStore();
   const [userPlant, setUserPlant] = useState(null);
   const [cities, setCities] = useState(null);
+  const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
 
 
   let location = useLocation();
@@ -237,7 +239,9 @@ function PlanteDetails() {
               icon={faBell}
               color="white"
               size="1x"
-              className="bg-[#464C44] p-2 rounded-full mr-3"
+              className="bg-[#464C44] p-2 rounded-full mr-3 cursor-pointer"
+              onClick={() => setIsNotificationSidebarOpen(true)}
+
             />
             <Link to="/profil">
               <FontAwesomeIcon
@@ -559,6 +563,11 @@ function PlanteDetails() {
       )}
 
       <footer className="w-100% bg-black h-11"></footer>
+      <NotificationSidebar
+        isOpen={isNotificationSidebarOpen}
+        onClose={() => setIsNotificationSidebarOpen(false)}
+     
+      />
     </div>
   );
 }

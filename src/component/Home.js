@@ -18,7 +18,6 @@ function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
   const displayPlant = async () => {
     try {
       if (!token) {
@@ -121,12 +120,11 @@ function Home() {
                 className="bg-[#464C44] p-2  rounded-full mr-3"
 
               /></Link>
-            <Link to="/profil"></Link>
             <FontAwesomeIcon
               icon={faBell}
               color="white"
               size="2x"
-              className="bg-[#464C44] p-2  rounded-full mr-3"
+              className="bg-[#464C44] p-2  rounded-full mr-3 cursor-pointer"
               onClick={() => setIsNotificationSidebarOpen(true)}
             />
             <Link to="/profil">
@@ -249,7 +247,7 @@ function Home() {
       <NotificationSidebar
         isOpen={isNotificationSidebarOpen}
         onClose={() => setIsNotificationSidebarOpen(false)}
-        notifications={notifications}
+     
       />
     </div>
   );

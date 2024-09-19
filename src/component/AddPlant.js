@@ -4,6 +4,7 @@ import { faUser, faBell } from "@fortawesome/free-regular-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import useStore from "../store/Store";
+import NotificationSidebar from './shared/NotificationSidebar';
 
 function AddPlant() {
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ function AddPlant() {
   const navigate = useNavigate();
   const { token, getSelectValue, sun, temp, water } = useStore();
   const [plant, setPlant] = useState(null); 
-
+  const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
   useEffect(() => {
     const fetchSelectValues = async () => {
       try {
@@ -127,8 +128,10 @@ function AddPlant() {
               icon={faBell}
               color="white"
               size="1x"
-              className="bg-[#464C44] p-2 rounded-full mr-3"
-            />
+              className="bg-[#464C44] p-2 rounded-full mr-3 cursor-pointer"
+              onClick={() => setIsNotificationSidebarOpen(true)}
+
+           />
             <Link to="/profil">
               <FontAwesomeIcon
                 icon={faUser}
@@ -255,6 +258,11 @@ function AddPlant() {
         </form>
       </div>
       <footer className="w-100% bg-black h-11"></footer>
+      <NotificationSidebar
+        isOpen={isNotificationSidebarOpen}
+        onClose={() => setIsNotificationSidebarOpen(false)}
+     
+      />
     </div>
   );
 }
