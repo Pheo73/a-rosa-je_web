@@ -59,8 +59,8 @@ function NotificationSidebar({ isOpen, onClose }) {
             if (!response.ok) {
                 throw new Error('Failed to fetch notifications');
             }
-            navigate(`/chat/${notification.sender_username}`);
-
+            navigate(`/chat?${notification.sender_username}`);
+            onClose();
 
         } catch (error) {
             console.error('Error marking notification read', error);

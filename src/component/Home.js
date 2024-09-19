@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import useStore from "../store/Store";
-import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { faEnvelope, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import NotificationSidebar from './shared/NotificationSidebar';
 
 function Home() {
@@ -113,6 +113,15 @@ function Home() {
         </div>
         <div className="ml-auto mr-16">
           <div className="flex">
+            <Link to="/chat">
+              <FontAwesomeIcon
+                icon={faEnvelope}
+                color="white"
+                size="2x"
+                className="bg-[#464C44] p-2  rounded-full mr-3"
+
+              /></Link>
+            <Link to="/profil"></Link>
             <FontAwesomeIcon
               icon={faBell}
               color="white"
@@ -232,8 +241,8 @@ function Home() {
       <img
         src="./accueil_plante.png"
         className={`${userPlant === null || userPlant.length === 0
-            ? "ml-auto right-0 mt-[-20rem]"
-            : "absolute z-50 ml-auto right-0 mt-[-32rem]"
+          ? "ml-auto right-0 mt-[-20rem]"
+          : "absolute z-50 ml-auto right-0 mt-[-32rem]"
           }`}
         alt="accueil"
       />

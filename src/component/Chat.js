@@ -64,7 +64,6 @@ export default function Chat() {
 
   const getConversation = async () => {
     try {
-      
       const response = await fetch(`http://172.16.1.126:8000/api/conversations/`, {
         method: "GET",
         headers: {
@@ -75,7 +74,7 @@ export default function Chat() {
       if (!response.ok) {
         throw new Error("Erreur lors de la récupération des conversations.");
       }
-     
+
       const data = await response.json();
       setConversations(data);
       if (username) {
@@ -98,9 +97,8 @@ export default function Chat() {
     }
   }, [token, getNotifications, username]);
 
-const getChatCreator = async (conversation) => {
-      if (activeConversation) {
-      
+  const getChatCreator = async (conversation) => {
+    if (activeConversation) {
       const responseCreator = await fetch(`http://172.16.1.126:8000/api/conversations/${conversation.id}/`, {
         method: "GET",
         headers: {
@@ -113,27 +111,24 @@ const getChatCreator = async (conversation) => {
       }
       const dataCreator = await responseCreator.json();
       setChatInitiator(dataCreator)
-    
     }
-}
-
+  }
 
   useEffect(() => {
-    
     let intervalId;
 
     if (activeConversation) {
-    const conversation = conversations.find(conv =>
-      conv.participants.some(participant => participant.username === activeConversation.username)
-    );
-    getChatCreator(conversation);
-    if (conversation) {
-      getMessages(conversation.id);
-
-      intervalId = setInterval(() => {
+      const conversation = conversations.find(conv =>
+        conv.participants.some(participant => participant.username === activeConversation.username)
+      );
+      getChatCreator(conversation);
+      if (conversation) {
         getMessages(conversation.id);
-      }, 5000);
-    }
+
+        intervalId = setInterval(() => {
+          getMessages(conversation.id);
+        }, 5000);
+      }
     }
 
     return () => {
@@ -141,7 +136,7 @@ const getChatCreator = async (conversation) => {
         clearInterval(intervalId);
       }
     };
-    
+
   }, [activeConversation, conversations, getMessages]);
 
   const handleSendMessage = async () => {
@@ -176,6 +171,28 @@ const getChatCreator = async (conversation) => {
     }
   };
 
+  const handleStatusUpdate = async (guardian_applications, status) => {
+    if (!activeConversation) return;
+
+    try {
+      const response = await fetch(`http://172.16.1.126:8000/api/guardian-applications/${guardian_applications[0].id}/update-status/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur lors de la mise à jour du statut: ${response.statusText}`);
+      }
+
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du statut :", error);
+    }
+  };
+
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -184,7 +201,6 @@ const getChatCreator = async (conversation) => {
       preserveAspectRatio: 'xMidYMid slice'
     }
   };
-
 
   useEffect(() => {
     getUser();
@@ -240,18 +256,53 @@ const getChatCreator = async (conversation) => {
                 }`}
               onClick={() => setActiveConversation(conv.participants.find(e => e.username !== user.username))}
             >
-              <p className="font-medium">{conv.participants.find((e) => e.username !== user.username).username}</p>
+              <p className="font-medium">{conv.participants.find((e) => e.username !== user.username).first_name}</p>
             </div>
           ))}
         </aside>
 
         {activeConversation ? (
           <main className="flex-1 flex flex-col bg-white rounded-lg shadow-md">
-            <div className="p-4 border-b flex">
-              <h1 className="text-2xl font-bold">Discutez avec {activeConversation.username}</h1>
-              <FontAwesomeIcon icon={faXmark} className='hover:text-red-500 cursor-pointer my-auto ml-auto mr-0' onClick={() => { setActiveConversation(null) }} />
-            </div>
+            <div className="p-4 border-b items-center">
+              <div className='flex'>
 
+              <h1 className="text-2xl font-bold">Discutez avec {activeConversation.first_name}</h1>
+
+           
+
+
+              <div className="ml-auto flex space-x-2">
+
+                <FontAwesomeIcon
+                  icon={faXmark}
+                  className='hover:text-red-500 cursor-pointer my-auto ml-2'
+                  onClick={() => { setActiveConversation(null) }}
+                />
+              </div>
+              </div>
+              {chatInitiator?.guardian_applications?.length !== 0 &&
+                chatInitiator?.guardian_applications?.filter((e)=>e.status === "pending").map((offer) => (
+                  <div className='flex mt-2'>
+                  <p className='my-auto'>Nom de la plante : {offer.plant_name}</p>
+                  <div key={offer.id} className='flex gap-2 ml-2'>
+                    <button
+                      onClick={() => handleStatusUpdate(offer, 'accepted')}
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+                    >
+                      Accepter
+                    </button>
+                    <button
+                      onClick={() => handleStatusUpdate(offer, 'rejected')}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                    >
+                      Refuser
+                    </button>
+                  </div>
+                  </div>
+                ))
+              }
+            </div>
+            
             <div className="flex-1 overflow-y-auto p-4 scrollbar-custom">
               {messages.map((message, index) => (
                 <div
@@ -280,7 +331,7 @@ const getChatCreator = async (conversation) => {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 className="flex-grow border rounded-l-lg px-2 py-1"
-                placeholder="Type your message..."
+                placeholder="Ecrivez votre message..."
                 disabled={!activeConversation}
               />
               <button
